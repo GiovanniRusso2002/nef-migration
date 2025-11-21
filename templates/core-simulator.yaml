@@ -1,0 +1,8 @@
+{{- if .Values.coreSimulator.enabled }}
+
+{{ include "openexposure.configmap" (dict "name" "core-simulator" "svc" .Values.coreSimulator "context" .) }}
+
+---
+{{ include "openexposure.deployment" (dict "name" "core-simulator" "svc" .Values.coreSimulator "context" .) }}
+
+{{- end }}

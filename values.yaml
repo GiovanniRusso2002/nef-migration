@@ -1,0 +1,152 @@
+# Global helpers and defaults
+# todo: set name as services (to avoid misunderstadings)
+
+global:
+  imagePullSecrets: []
+  imagePullPolicy: IfNotPresent
+  defaultResources:
+    requests: {}
+    limits: {}
+
+monitoringEvent:
+  enabled: true
+  image: "openexposure/monitoring-event:develop"
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets: []
+  resources: {}
+  replicaCount: 1
+  port: 8080
+  env:
+  - name: HTTP_PORT
+    value: "8080"
+  - name: REDIS_SVC
+    value: "redis-master:6379"
+  - name: REDIS_PASSWORD
+    value: ""
+  config:
+    enabled: true
+    data:
+      nbi:
+        httpVersion: 1
+        useTLS: false
+        fqdn: 3gpp-monitoring-event
+        port: 8080
+      sbi:
+        identitySvc: "http://identity-service:8080"
+        redisSvc: "redis://redis-master:6379/"
+        httpVersion: 2
+      supportedFeatures: "3fff"
+      capifSvc: "http://nef-capif:8080"
+
+ueIdentity:
+  enabled: true
+  image: "openexposure/ue-identity-service:develop"
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets: []
+  resources: {}
+  replicaCount: 1
+  port: 8080
+  env:
+  - name: HTTP_PORT
+    value: "8080"
+  - name: REDIS_SVC
+    value: "redis-master:6379"
+
+coreNetwork:
+  enabled: true
+  image: "openexposure/core-network-service:develop"
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets: []
+  resources: {}
+  replicaCount: 1
+  type: ClusterIP
+  port: 9090
+  env:
+  - name: USE_NRF
+    value: "false"
+  - name: CN_HTTP_VERSION
+    value: "1"
+  - name: REDIS_ADDR
+    value: "redis-master:6379"
+  - name: AMF_IP_ADDR
+    value: "http://nef-core-simulator:8080"
+  - name: AMF_SUBSCR_ROUTE
+    value: "/namf-evts/v1"
+  - name: AMF_API_ROUTE
+    value: "/test/amf"
+  - name: AMF_NOTIFY_CORRELATION_ID
+    value: "string"
+  - name: AMF_NOTIFICATION_ID
+    value: "1"
+  - name: AMF_NOTIFICATION_FORWARD_ROUTE
+    value: "/sbi/notification/amf"
+  - name: SMF_IP_ADDR
+    value: "http://nef-core-simulator:8080"
+  - name: SMF_SUBSCR_ROUTE
+    value: "/nsmf_event-exposure/v1"
+  - name: SMF_API_ROUTE
+    value: "/test/smf"
+  - name: SMF_NOTIFY_CORRELATION_ID
+    value: "string"
+  - name: SMF_NOTIFICATION_ID
+    value: "2"
+  - name: SMF_NOTIFICATION_FORWARD_ROUTE
+    value: "/sbi/notification/smf"
+  - name: EVENT_NOTIFY_URI
+    value: "http://nef-core-network:9090"
+  - name: SERVER_ADDR
+    value: "0.0.0.0:9090" # bind to all interfaces, not to the service ClusterIP nef-core-network:9090
+    # value: "nef-core-network:9090" Application binds to all available interfaces on the Pod
+    # Traffic flow: Client → Service (10.96.252.195:9090) → kube-proxy routes → Pod (10.244.0.5:9090) → Your app listening on 0.0.0.0:9090
+    # The Service acts as a router/load balancer, not a binding address
+    # Your Service nef-core-network has a ClusterIP (10.96.252.195)
+    # This IP doesn't exist on any Pod - it's a virtual IP managed by kube-proxy
+    # kube-proxy uses iptables/ipvs rules to route traffic from this ClusterIP to the actual Pod IPs
+
+coreSimulator:
+  enabled: true
+  image: "openexposure/core-simulator:develop"
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets: []
+  resources: {}
+  replicaCount: 1
+  port: 8080
+  config:
+    enabled: true
+    data:
+      httpVersion: 1
+      useTLS: false
+      fqdn: core-simulator
+      sbiPort: 8080
+      oamPort: 8081
+      initOnStartup: true
+      simulationProfile:
+        plmn:
+          mcc: "001"
+          mnc: "06"
+        dnn: "intenet"
+        slice:
+          sst: 1
+          sd: "FFFFFF"
+        numOfUe: 5
+        numOfgNB: 40
+        arrivalRate: 1
+capif:  
+  enabled: true
+  image: "openexposure/capif-service:develop"
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets: []
+  resources: {}
+  replicaCount: 1
+  port: 8080
+  env:
+  - name: CAPIF_FQDN
+    value: "vm03.netsoft.cs.eurecom.fr"
+  - name: CAPIF_AUTH_PORT
+    value: "8084"
+  - name: CAPIF_USERNAME
+    value: "nef-semproj"
+  - name: CAPIF_PASSWORD
+    value: "semprojopenex"
+  - name: INGRESS_FQDN
+    value: ""

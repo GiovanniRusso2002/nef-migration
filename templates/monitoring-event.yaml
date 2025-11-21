@@ -1,0 +1,6 @@
+{{- if .Values.monitoringEvent.enabled }}
+{{ include "openexposure.configmap" (dict "name" "monitoring-event" "svc" .Values.monitoringEvent "context" .) }}
+---
+{{ include "openexposure.deployment" (dict "name" "monitoring-event" "svc" .Values.monitoringEvent "context" .) }}
+{{- end }}
+

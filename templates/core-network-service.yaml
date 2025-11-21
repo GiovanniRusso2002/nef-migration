@@ -1,0 +1,3 @@
+{{- if .Values.coreNetwork.enabled }}
+{{ include "openexposure.service" (dict "name" "core-network" "svc" .Values.coreNetwork "context" .) }}
+{{- end }}
