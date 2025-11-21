@@ -29,14 +29,14 @@ monitoringEvent:
       nbi:
         httpVersion: 1
         useTLS: false
-        fqdn: 3gpp-monitoring-event
+        fqdn: "3gpp-monitoing-event.local"
         port: 8080
       sbi:
         identitySvc: "http://identity-service:8080"
         redisSvc: "redis://redis-master:6379/"
         httpVersion: 2
       supportedFeatures: "3fff"
-      capifSvc: "http://nef-capif:8080"
+      capifSvc: nef-capif:8080
 
 ueIdentity:
   enabled: true
