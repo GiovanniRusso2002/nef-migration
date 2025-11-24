@@ -1,0 +1,4 @@
+{{- if .Values.ueAddress.enabled }}
+{{ include "openexposure.service" (dict "name" "ue-address" "svc" .Values.ueAddress "context" .) }}
+{{- end }}
+

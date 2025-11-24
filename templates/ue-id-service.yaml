@@ -1,0 +1,4 @@
+{{- if .Values.ueId.enabled }}
+{{ include "openexposure.service" (dict "name" "ue-id" "svc" .Values.ueId "context" .) }}
+{{- end }}
+

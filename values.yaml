@@ -52,6 +52,70 @@ ueIdentity:
   - name: REDIS_SVC
     value: "redis-master:6379"
 
+ueProfile:
+  enabled: true
+  image: "openexposure/ue-profile-service:develop"
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets: []
+  resources: {}
+  replicaCount: 1
+  port: 8080
+  env:
+  - name: HTTPS
+    value: false
+  - name: CN_HTTP_VERSION
+    value: "1"
+  - name: REDIS_SVC
+    value: "redis-master:6379"
+  - name: NBI_PORT
+    value: "8080"
+
+
+ueAddress:
+  enabled: true
+  image: "openexposure/ue-address:develop"
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets: []
+  resources: {}
+  replicaCount: 1
+  port: 8080
+  config:
+    enabled: true
+    data:
+      nbi:
+        httpVersion: 1
+        useTLS: false
+        fqdn: 3gpp-ue-address.local
+        port: 8080
+      sbi:
+        identitySvc: http://identity-service:8080
+        profileSvc: http://ue-profile-service:8080
+        httpVersion: 1
+      supportedFeatures: 3fff
+      capifSvc: nef-capif:8080
+
+ueId:
+  enabled: true
+  image: "openexposure/ue-id:develop"
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets: []
+  resources: {}
+  replicaCount: 1
+  port: 8080
+  config:
+    enabled: true
+    data:
+      nbi:
+        httpVersion: 1
+        useTLS: false
+        fqdn: 3gpp-ueid.local
+        port: 8080
+      sbi:
+        identitySvc: http://identity-service:8080
+        httpVersion: 1
+      supportedFeatures: 3fff
+      capifSvc: nef-capif:8080
+
 coreNetwork:
   enabled: true
   image: "openexposure/core-network-service:develop"
@@ -111,6 +175,9 @@ coreSimulator:
   resources: {}
   replicaCount: 1
   port: 8080
+  env:
+    - name: REDIS_ADDR
+      value: "redis-master:6379"
   config:
     enabled: true
     data:
@@ -128,9 +195,9 @@ coreSimulator:
         slice:
           sst: 1
           sd: "FFFFFF"
-        numOfUe: 5
-        numOfgNB: 40
-        arrivalRate: 1
+        numOfUe: 20
+        numOfgNB: 10
+        arrivalRate: 2
 capif:  
   enabled: true
   image: "openexposure/capif-service:develop"
@@ -150,3 +217,25 @@ capif:
     value: "semprojopenex"
   - name: INGRESS_FQDN
     value: ""
+
+redis:
+  enabled: true
+  architecture: standalone
+
+  image:
+    registry: docker.io
+    repository: library/redis
+    tag: "7.2"
+    pullPolicy: IfNotPresent
+
+  master:
+    image:
+      registry: docker.io
+      repository: library/redis
+      tag: "7.2"
+
+    persistence:
+      enabled: false
+
+  auth:
+    enabled: false
