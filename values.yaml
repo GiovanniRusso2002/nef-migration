@@ -8,6 +8,54 @@ global:
     requests: {}
     limits: {}
 
+asSessionWithQos:
+  enabled: true
+  image: "openexposure/as-session-with-qos:develop"
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets: []
+  resources: {}
+  replicaCount: 1
+  port: 8080
+  env:
+  - name: HTTP_PORT
+    value: "8080"
+  config:
+    enabled: true
+    data:
+      nbi:
+        httpVersion: 1
+        useTLS: false
+        fqdn: "3gpp-as-session-with-qos.local"
+        port: 8080
+      sbi:
+        httpVersion: 1
+      supportedFeatures: "3fff"
+      capifSvc: nef-capif:8080
+
+trafficInfluence:
+  enabled: true
+  image: "openexposure/traffic-influence:develop"
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets: []
+  resources: {}
+  replicaCount: 1
+  port: 8080
+  env:
+  - name: HTTP_PORT
+    value: "8080"
+  config:
+    enabled: true
+    data:
+      nbi:
+        httpVersion: 1
+        useTLS: false
+        fqdn: "3gpp-traffic-influence.local"
+        port: 8080
+      sbi:
+        httpVersion: 1
+      supportedFeatures: "3fff"
+      capifSvc: nef-capif:8080
+
 monitoringEvent:
   enabled: true
   image: "openexposure/monitoring-event:develop"
@@ -20,7 +68,7 @@ monitoringEvent:
   - name: HTTP_PORT
     value: "8080"
   - name: REDIS_SVC
-    value: "redis-master:6379"
+    value: "nef-redis-master:6379"
   - name: REDIS_PASSWORD
     value: ""
   config:
@@ -32,8 +80,8 @@ monitoringEvent:
         fqdn: "3gpp-monitoing-event.local"
         port: 8080
       sbi:
-        identitySvc: "http://identity-service:8080"
-        redisSvc: "redis://redis-master:6379/"
+        identitySvc: "http://nef-ue-identity:8080"
+        redisSvc: "redis://nef-redis-master:6379/"
         httpVersion: 2
       supportedFeatures: "3fff"
       capifSvc: nef-capif:8080
@@ -50,7 +98,31 @@ ueIdentity:
   - name: HTTP_PORT
     value: "8080"
   - name: REDIS_SVC
-    value: "redis-master:6379"
+    value: "nef-redis-master:6379"
+  - name: NBI_PORT
+    value: "8080"
+  - name: HTTPS
+    value: "false"
+  - name: HTTP_VER
+    value: "1"
+
+datasetExporter:
+  enabled: true
+  image: "openexposure/dataset-exporter:develop"
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets: []
+  resources: {}
+  replicaCount: 1
+  port: 8080
+  env:
+  - name: HTTP_PORT
+    value: "8080"
+  - name: REDIS_SVC
+    value: "nef-redis-master:6379"
+  - name: HTTPS
+    value: "false"
+  - name: HTTP_VER
+    value: "1"
 
 ueProfile:
   enabled: true
@@ -66,10 +138,9 @@ ueProfile:
   - name: CN_HTTP_VERSION
     value: "1"
   - name: REDIS_SVC
-    value: "redis-master:6379"
+    value: "nef-redis-master:6379"
   - name: NBI_PORT
     value: "8080"
-
 
 ueAddress:
   enabled: true
@@ -131,7 +202,9 @@ coreNetwork:
   - name: CN_HTTP_VERSION
     value: "1"
   - name: REDIS_ADDR
-    value: "redis-master:6379"
+    value: "nef-redis-master:6379"
+  - name: REDIS_SVC
+    value: "nef-redis-master:6379"
   - name: AMF_IP_ADDR
     value: "http://nef-core-simulator:8080"
   - name: AMF_SUBSCR_ROUTE
@@ -176,8 +249,10 @@ coreSimulator:
   replicaCount: 1
   port: 8080
   env:
-    - name: REDIS_ADDR
-      value: "redis-master:6379"
+  - name: REDIS_ADDR
+    value: "nef-redis-master:6379"
+  - name: REDIS_SVC
+    value: "nef-redis-master:6379"
   config:
     enabled: true
     data:
@@ -198,7 +273,7 @@ coreSimulator:
         numOfUe: 20
         numOfgNB: 10
         arrivalRate: 2
-capif:  
+capif:
   enabled: true
   image: "openexposure/capif-service:develop"
   imagePullPolicy: IfNotPresent
@@ -218,6 +293,75 @@ capif:
   - name: INGRESS_FQDN
     value: ""
 
+prometheus:
+  enabled: true
+  image: "prom/prometheus:latest"
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets: []
+  resources: {}
+  replicaCount: 1
+  port: 9090
+  config:
+    enabled: true
+    data:
+      global:
+        scrape_interval: 15s
+        evaluation_interval: 15s
+      scrape_configs:
+      - job_name: 'kubernetes-pods'
+        kubernetes_sd_configs:
+        - role: pod
+        relabel_configs:
+        - source_labels: [ __meta_kubernetes_pod_annotation_prometheus_io_scrape ]
+          action: keep
+          regex: true
+        - source_labels: [ __meta_kubernetes_pod_annotation_prometheus_io_path ]
+          action: replace
+          target_label: __metrics_path__
+          regex: (.+)
+        - source_labels: [ __address__, __meta_kubernetes_pod_annotation_prometheus_io_port ]
+          action: replace
+          regex: ([^:]+)(?::\d+)?;(\d+)
+          replacement: $1:$2
+          target_label: __address__
+
+grafana:
+  enabled: true
+  image: "grafana/grafana:latest"
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets: []
+  resources: {}
+  replicaCount: 1
+  port: 3000
+  env:
+  - name: GF_AUTH_DISABLE_LOGIN_FORM
+    value: "true"
+  - name: GF_AUTH_ANONYMOUS_ENABLED
+    value: "true"
+  - name: GF_AUTH_ANONYMOUS_ORG_ROLE
+    value: "Admin"
+  config:
+    enabled: true
+    datasources:
+      apiVersion: 1
+      datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://nef-prometheus:9090
+        isDefault: true
+    dashboards:
+      apiVersion: 1
+      providers:
+      - name: 'default'
+        orgId: 1
+        folder: ''
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards
+
 redis:
   enabled: true
   architecture: standalone
@@ -235,7 +379,55 @@ redis:
       tag: "7.2"
 
     persistence:
-      enabled: false
+      enabled: true
 
   auth:
     enabled: false
+
+redisInsight:
+  enabled: true
+  image: "redis/redisinsight:latest"
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets: []
+  resources: {}
+  replicaCount: 1
+  port: 5540
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  hosts:
+  - host: nef.local
+    paths:
+    - path: /3gpp-as-session-with-qos
+      pathType: Prefix
+      service: nef-as-session-with-qos
+      port: 8080
+    - path: /3gpp-traffic-influence
+      pathType: Prefix
+      service: nef-traffic-influence
+      port: 8080
+    - path: /3gpp-monitoring-event
+      pathType: Prefix
+      service: nef-monitoring-event
+      port: 8080
+    - path: /3gpp-ue-id
+      pathType: Prefix
+      service: nef-ue-id
+      port: 8080
+    - path: /3gpp-ue-address
+      pathType: Prefix
+      service: nef-ue-address
+      port: 8080
+    - path: /grafana
+      pathType: Prefix
+      service: nef-grafana
+      port: 3000
+    - path: /prometheus
+      pathType: Prefix
+      service: nef-prometheus
+      port: 9090
+  tls: []

@@ -1,0 +1,3 @@
+{{- if .Values.redisInsight.enabled }}
+{{ include "openexposure.service" (dict "name" "redis-insight" "svc" .Values.redisInsight "context" .) }}
+{{- end }}

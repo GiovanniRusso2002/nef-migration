@@ -1,0 +1,12 @@
+{{- if and .Values.asSessionWithQos.enabled .Values.asSessionWithQos.config.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-as-session-with-qos-config
+  labels:
+    app.kubernetes.io/name: as-session-with-qos
+    app.kubernetes.io/instance: {{ .Release.Name }}
+data:
+  config.yaml: |
+{{ toYaml .Values.asSessionWithQos.config.data | indent 4 }}
+{{- end }}
