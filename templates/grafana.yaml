@@ -54,6 +54,8 @@ spec:
               mountPath: /etc/grafana/provisioning/datasources
             - name: dashboards-config
               mountPath: /etc/grafana/provisioning/dashboards
+            - name: dashboards
+              mountPath: /var/lib/grafana/dashboards
             - name: storage
               mountPath: /var/lib/grafana
           {{- end }}
@@ -77,6 +79,9 @@ spec:
         - name: dashboards-config
           configMap:
             name: {{ .Release.Name }}-grafana-dashboards
+        - name: dashboards
+          configMap:
+            name: {{ .Release.Name }}-grafana-dashboard-coresim
         - name: storage
           emptyDir: {}
       {{- end }}

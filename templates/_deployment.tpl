@@ -14,10 +14,13 @@ spec:
     metadata:
       labels:
         {{ include "openexposure.selectorLabels" . | nindent 8 }}
-      {{- if and .svc.config (hasKey .svc.config "enabled") .svc.config.enabled }}
       annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: {{ .svc.prometheusPort | default .svc.port | quote }}
+        prometheus.io/path: "/metrics"
+        {{- if and .svc.config (hasKey .svc.config "enabled") .svc.config.enabled }}
         checksum/config: {{ toYaml .svc.config.data | sha256sum | quote }}
-      {{- end }}
+        {{- end }}
     spec:
       containers:
         - name: {{ .name }}

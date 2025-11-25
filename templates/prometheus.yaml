@@ -27,6 +27,7 @@ spec:
         checksum/config: {{ toYaml .Values.prometheus.config.data | sha256sum | quote }}
       {{- end }}
     spec:
+      serviceAccountName: {{ .Release.Name }}-prometheus
       containers:
         - name: prometheus
           image: {{ .Values.prometheus.image }}

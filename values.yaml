@@ -28,9 +28,29 @@ asSessionWithQos:
         fqdn: "3gpp-as-session-with-qos.local"
         port: 8080
       sbi:
-        httpVersion: 1
+        nrfSvc: "http://nrf.net01.3gpp.eurecom.fr"
+        useNrf: false
+        pcfSvc: "http://core-simulator:8080"
+        httpVersion: 2
       supportedFeatures: "3fff"
-      capifSvc: nef-capif:8080
+      capifSvc: capif-connector:8080
+    qosConfig:
+      qos-e:
+        marBwDl: 120000
+        marBwUl: 120000
+        mediaType: CONTROL
+      qos2:
+        marBwDl: 240000
+        marBwUl: 240000
+        mediaType: CONTROL
+      qos3:
+        marBwDl: 480000
+        marBwUl: 480000
+        mediaType: CONTROL
+      qos4:
+        marBwDl: 960000
+        marBwUl: 960000
+        mediaType: VIDEO
 
 trafficInfluence:
   enabled: true
@@ -52,7 +72,11 @@ trafficInfluence:
         fqdn: "3gpp-traffic-influence.local"
         port: 8080
       sbi:
-        httpVersion: 1
+        nrfSvc: http://nrf.net01.3gpp.eurecom.fr
+        useNrf: false
+        pcfSvc: http://nef-core-simulator:8080
+        httpVersion: 2
+
       supportedFeatures: "3fff"
       capifSvc: nef-capif:8080
 
@@ -248,6 +272,10 @@ coreSimulator:
   resources: {}
   replicaCount: 1
   port: 8080
+  extraPorts:
+  - port: 9090
+    name: metrics
+  prometheusPort: 9090
   env:
   - name: REDIS_ADDR
     value: "nef-redis-master:6379"
@@ -256,8 +284,7 @@ coreSimulator:
   config:
     enabled: true
     data:
-      httpVersion: 1
-      useTLS: false
+      httpVersion: 2
       fqdn: core-simulator
       sbiPort: 8080
       oamPort: 8081
@@ -265,7 +292,7 @@ coreSimulator:
       simulationProfile:
         plmn:
           mcc: "001"
-          mnc: "06"
+          mnc: "01"
         dnn: "intenet"
         slice:
           sst: 1
@@ -273,6 +300,7 @@ coreSimulator:
         numOfUe: 20
         numOfgNB: 10
         arrivalRate: 2
+
 capif:
   enabled: true
   image: "openexposure/capif-service:develop"
@@ -345,11 +373,12 @@ grafana:
     datasources:
       apiVersion: 1
       datasources:
-      - name: Prometheus
+      - name: prometheus
         type: prometheus
         access: proxy
         url: http://nef-prometheus:9090
         isDefault: true
+        editable: false # todo determine if true or false (ask Giulio as there are two conflicting requirements)
     dashboards:
       apiVersion: 1
       providers:
