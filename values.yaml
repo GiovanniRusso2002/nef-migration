@@ -4,18 +4,57 @@
 global:
   imagePullSecrets: []
   imagePullPolicy: IfNotPresent
+  # Default security contexts applied to all services
+  defaultPodSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    fsGroup: 10001
+    seccompProfile:
+      type: RuntimeDefault
+  defaultSecurityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    capabilities:
+      drop:
+      - ALL
   defaultResources:
-    requests: {}
-    limits: {}
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
 
 asSessionWithQos:
   enabled: true
   image: "openexposure/as-session-with-qos:develop"
   imagePullPolicy: IfNotPresent
   imagePullSecrets: []
-  resources: {}
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
   replicaCount: 1
   port: 8080
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    fsGroup: 10001
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    capabilities:
+      drop:
+      - ALL
   env:
   - name: HTTP_PORT
     value: "8080"
@@ -57,9 +96,29 @@ trafficInfluence:
   image: "openexposure/traffic-influence:develop"
   imagePullPolicy: IfNotPresent
   imagePullSecrets: []
-  resources: {}
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
   replicaCount: 1
   port: 8080
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    fsGroup: 10001
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    capabilities:
+      drop:
+      - ALL
   env:
   - name: HTTP_PORT
     value: "8080"
@@ -85,16 +144,39 @@ monitoringEvent:
   image: "openexposure/monitoring-event:develop"
   imagePullPolicy: IfNotPresent
   imagePullSecrets: []
-  resources: {}
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
   replicaCount: 1
   port: 8080
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    fsGroup: 10001
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    capabilities:
+      drop:
+      - ALL
   env:
   - name: HTTP_PORT
     value: "8080"
   - name: REDIS_SVC
-    value: "nef-redis-master:6379"
+    value: "redis-stack:6379"
   - name: REDIS_PASSWORD
-    value: ""
+    valueFrom:
+      secretKeyRef:
+        name: nef-redis-secret
+        key: redis-password
   config:
     enabled: true
     data:
@@ -105,7 +187,7 @@ monitoringEvent:
         port: 8080
       sbi:
         identitySvc: "http://nef-ue-identity:8080"
-        redisSvc: "redis://nef-redis-master:6379/"
+        redisSvc: "redis://redis-stack:6379/"
         httpVersion: 2
       supportedFeatures: "3fff"
       capifSvc: nef-capif:8080
@@ -115,14 +197,34 @@ ueIdentity:
   image: "openexposure/ue-identity-service:develop"
   imagePullPolicy: IfNotPresent
   imagePullSecrets: []
-  resources: {}
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
   replicaCount: 1
   port: 8080
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    fsGroup: 10001
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    capabilities:
+      drop:
+      - ALL
   env:
   - name: HTTP_PORT
     value: "8080"
   - name: REDIS_SVC
-    value: "nef-redis-master:6379"
+    value: "redis-stack:6379"
   - name: NBI_PORT
     value: "8080"
   - name: HTTPS
@@ -135,14 +237,34 @@ datasetExporter:
   image: "openexposure/dataset-exporter:develop"
   imagePullPolicy: IfNotPresent
   imagePullSecrets: []
-  resources: {}
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
   replicaCount: 1
   port: 8080
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    fsGroup: 10001
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    capabilities:
+      drop:
+      - ALL
   env:
   - name: HTTP_PORT
     value: "8080"
   - name: REDIS_SVC
-    value: "nef-redis-master:6379"
+    value: "redis-stack:6379"
   - name: HTTPS
     value: "false"
   - name: HTTP_VER
@@ -153,16 +275,36 @@ ueProfile:
   image: "openexposure/ue-profile-service:develop"
   imagePullPolicy: IfNotPresent
   imagePullSecrets: []
-  resources: {}
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
   replicaCount: 1
   port: 8080
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    fsGroup: 10001
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    capabilities:
+      drop:
+      - ALL
   env:
   - name: HTTPS
     value: false
   - name: CN_HTTP_VERSION
     value: "1"
   - name: REDIS_SVC
-    value: "nef-redis-master:6379"
+    value: "redis-stack:6379"
   - name: NBI_PORT
     value: "8080"
 
@@ -171,9 +313,29 @@ ueAddress:
   image: "openexposure/ue-address:develop"
   imagePullPolicy: IfNotPresent
   imagePullSecrets: []
-  resources: {}
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
   replicaCount: 1
   port: 8080
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    fsGroup: 10001
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    capabilities:
+      drop:
+      - ALL
   config:
     enabled: true
     data:
@@ -194,9 +356,29 @@ ueId:
   image: "openexposure/ue-id:develop"
   imagePullPolicy: IfNotPresent
   imagePullSecrets: []
-  resources: {}
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
   replicaCount: 1
   port: 8080
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    fsGroup: 10001
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    capabilities:
+      drop:
+      - ALL
   config:
     enabled: true
     data:
@@ -216,19 +398,39 @@ coreNetwork:
   image: "openexposure/core-network-service:develop"
   imagePullPolicy: IfNotPresent
   imagePullSecrets: []
-  resources: {}
+  resources:
+    requests:
+      cpu: 150m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
   replicaCount: 1
   type: ClusterIP
   port: 9090
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    fsGroup: 10001
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    capabilities:
+      drop:
+      - ALL
   env:
   - name: USE_NRF
     value: "false"
   - name: CN_HTTP_VERSION
     value: "1"
   - name: REDIS_ADDR
-    value: "nef-redis-master:6379"
+    value: "redis-stack:6379"
   - name: REDIS_SVC
-    value: "nef-redis-master:6379"
+    value: "redis-stack:6379"
   - name: AMF_IP_ADDR
     value: "http://nef-core-simulator:8080"
   - name: AMF_SUBSCR_ROUTE
@@ -269,18 +471,40 @@ coreSimulator:
   image: "openexposure/core-simulator:develop"
   imagePullPolicy: IfNotPresent
   imagePullSecrets: []
-  resources: {}
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
   replicaCount: 1
   port: 8080
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    fsGroup: 10001
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    capabilities:
+      drop:
+      - ALL
   extraPorts:
+  - port: 8081
+    name: oam
   - port: 9090
     name: metrics
   prometheusPort: 9090
   env:
   - name: REDIS_ADDR
-    value: "nef-redis-master:6379"
+    value: "redis-stack:6379"
   - name: REDIS_SVC
-    value: "nef-redis-master:6379"
+    value: "redis-stack:6379"
   config:
     enabled: true
     data:
@@ -293,7 +517,7 @@ coreSimulator:
         plmn:
           mcc: "001"
           mnc: "01"
-        dnn: "intenet"
+        dnn: "internet"
         slice:
           sst: 1
           sd: "FFFFFF"
@@ -306,18 +530,47 @@ capif:
   image: "openexposure/capif-service:develop"
   imagePullPolicy: IfNotPresent
   imagePullSecrets: []
-  resources: {}
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
   replicaCount: 1
   port: 8080
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    fsGroup: 10001
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    capabilities:
+      drop:
+      - ALL
+  auth:
+    username: "nef-semproj"
+    password: "" # Set via secret: nef-capif-secret
   env:
   - name: CAPIF_FQDN
     value: "vm03.netsoft.cs.eurecom.fr"
   - name: CAPIF_AUTH_PORT
     value: "8084"
   - name: CAPIF_USERNAME
-    value: "nef-semproj"
+    valueFrom:
+      secretKeyRef:
+        name: nef-capif-secret
+        key: capif-username
   - name: CAPIF_PASSWORD
-    value: "semprojopenex"
+    valueFrom:
+      secretKeyRef:
+        name: nef-capif-secret
+        key: capif-password
   - name: INGRESS_FQDN
     value: ""
 
@@ -326,9 +579,29 @@ prometheus:
   image: "prom/prometheus:latest"
   imagePullPolicy: IfNotPresent
   imagePullSecrets: []
-  resources: {}
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
   replicaCount: 1
   port: 9090
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 65534 # nobody user for prometheus
+    runAsGroup: 65534
+    fsGroup: 65534
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    capabilities:
+      drop:
+      - ALL
   config:
     enabled: true
     data:
@@ -358,16 +631,55 @@ grafana:
   image: "grafana/grafana:latest"
   imagePullPolicy: IfNotPresent
   imagePullSecrets: []
-  resources: {}
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
   replicaCount: 1
   port: 3000
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 472 # grafana user
+    runAsGroup: 472
+    fsGroup: 472
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    capabilities:
+      drop:
+      - ALL
+  auth:
+    adminUser: "admin"
+    adminPassword: "" # Set via secret: nef-grafana-secret
   env:
-  - name: GF_AUTH_DISABLE_LOGIN_FORM
-    value: "true"
+  - name: GF_SECURITY_ADMIN_USER
+    valueFrom:
+      secretKeyRef:
+        name: nef-grafana-secret
+        key: admin-user
+  - name: GF_SECURITY_ADMIN_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: nef-grafana-secret
+        key: admin-password
   - name: GF_AUTH_ANONYMOUS_ENABLED
+    value: "false"
+  - name: GF_SECURITY_DISABLE_GRAVATAR
     value: "true"
-  - name: GF_AUTH_ANONYMOUS_ORG_ROLE
-    value: "Admin"
+  - name: GF_ANALYTICS_REPORTING_ENABLED
+    value: "false"
+  - name: GF_ANALYTICS_CHECK_FOR_UPDATES
+    value: "false"
+  - name: GF_SERVER_ROOT_URL
+    value: "%(protocol)s://%(domain)s:%(http_port)s/grafana/"
+  - name: GF_SERVER_SERVE_FROM_SUB_PATH
+    value: "true"
   config:
     enabled: true
     datasources:
@@ -393,41 +705,76 @@ grafana:
 
 redis:
   enabled: true
-  architecture: standalone
 
-  image:
-    registry: docker.io
-    repository: library/redis
-    tag: "7.2"
-    pullPolicy: IfNotPresent
-
-  master:
+  redis:
     image:
-      registry: docker.io
-      repository: library/redis
-      tag: "7.2"
+      repository: redis/redis-stack-server
+      tag: latest
 
-    persistence:
-      enabled: true
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 1000m
+        memory: 1Gi
 
   auth:
     enabled: false
+    password: "" # Set via secret: nef-redis-secret
 
 redisInsight:
   enabled: true
   image: "redis/redisinsight:latest"
   imagePullPolicy: IfNotPresent
   imagePullSecrets: []
-  resources: {}
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
   replicaCount: 1
   port: 5540
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1000 # Redis Insight official image uses UID 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: false # RedisInsight needs to write logs and data
+    runAsNonRoot: true
+    capabilities:
+      drop:
+      - ALL
 
 ingress:
   enabled: true
   className: "nginx"
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    # TLS and HTTPS enforcement
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    # Security headers
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Frame-Options: DENY";
+      more_set_headers "X-Content-Type-Options: nosniff";
+      more_set_headers "X-XSS-Protection: 1; mode=block";
+      more_set_headers "Referrer-Policy: strict-origin-when-cross-origin";
+      more_set_headers "Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'";
+    # TLS configuration
+    nginx.ingress.kubernetes.io/ssl-protocols: "TLSv1.2 TLSv1.3"
+    nginx.ingress.kubernetes.io/ssl-ciphers: "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-CHACHA20-POLY1305"
+    nginx.ingress.kubernetes.io/ssl-prefer-server-ciphers: "true"
+    # Rate limiting
+    nginx.ingress.kubernetes.io/limit-rps: "100"
+    nginx.ingress.kubernetes.io/limit-connections: "50"
   hosts:
   - host: nef.local
     paths:
@@ -459,4 +806,27 @@ ingress:
       pathType: Prefix
       service: nef-prometheus
       port: 9090
-  tls: []
+  tls:
+  - secretName: nef-tls-cert
+    hosts:
+    - nef.local
+
+# Network Policies for network segmentation and security
+networkPolicy:
+  enabled: true
+
+# Pod Disruption Budgets for high availability
+podDisruptionBudget:
+  enabled: true
+  monitoringEvent:
+    minAvailable: 1
+  ueIdentity:
+    minAvailable: 1
+  coreSimulator:
+    minAvailable: 1
+  redis:
+    minAvailable: 1
+  prometheus:
+    minAvailable: 1
+  grafana:
+    minAvailable: 1

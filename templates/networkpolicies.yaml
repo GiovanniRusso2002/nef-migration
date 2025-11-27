@@ -1,0 +1,480 @@
+{{- if .Values.networkPolicy.enabled }}
+---
+# Default deny all ingress traffic
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-default-deny-ingress
+  labels:
+    app.kubernetes.io/name: default-deny
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/managed-by: helm
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+
+---
+# Monitoring Event Service NetworkPolicy
+{{- if .Values.monitoringEvent.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-monitoring-event
+  labels:
+    app.kubernetes.io/name: monitoring-event
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/managed-by: helm
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: monitoring-event
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow from ingress controller
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: {{ .Values.monitoringEvent.port }}
+  egress:
+  # Allow to Redis
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis-stack
+    ports:
+    - protocol: TCP
+      port: 6379
+  # Allow to UE Identity
+  - to:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: ue-identity
+    ports:
+    - protocol: TCP
+      port: 8080
+  # Allow DNS
+  - to:
+    - namespaceSelector: {}
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    ports:
+    - protocol: UDP
+      port: 53
+{{- end }}
+
+---
+# Redis NetworkPolicy
+{{- if .Values.redis.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-redis
+  labels:
+    app.kubernetes.io/name: redis
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/managed-by: helm
+spec:
+  podSelector:
+    matchLabels:
+      app: redis-stack
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow from NEF services that need Redis
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: monitoring-event
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: ue-identity
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: dataset-exporter
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: ue-profile
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: core-network
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: core-simulator
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: redis-insight
+    - podSelector:
+        matchLabels:
+          app: redis-bug-demo
+    ports:
+    - protocol: TCP
+      port: 6379
+  egress:
+  # Allow DNS
+  - to:
+    - namespaceSelector: {}
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    ports:
+    - protocol: UDP
+      port: 53
+{{- end }}
+
+---
+# Prometheus NetworkPolicy
+{{- if .Values.prometheus.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-prometheus
+  labels:
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/managed-by: helm
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: prometheus
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow from ingress controller
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: {{ .Values.prometheus.port }}
+  # Allow from Grafana
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: grafana
+    ports:
+    - protocol: TCP
+      port: {{ .Values.prometheus.port }}
+  egress:
+  # Allow scraping all pods with prometheus annotation
+  - to:
+    - podSelector: {}
+    ports:
+    - protocol: TCP
+      port: 8080
+    - protocol: TCP
+      port: 9090
+  # Allow Kubernetes API access for service discovery
+  - to:
+    - namespaceSelector: {}
+    ports:
+    - protocol: TCP
+      port: 443
+  # Allow DNS
+  - to:
+    - namespaceSelector: {}
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    ports:
+    - protocol: UDP
+      port: 53
+{{- end }}
+
+---
+# Grafana NetworkPolicy
+{{- if .Values.grafana.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-grafana
+  labels:
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/managed-by: helm
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: grafana
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow from ingress controller
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: {{ .Values.grafana.port }}
+  egress:
+  # Allow to Prometheus
+  - to:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: prometheus
+    ports:
+    - protocol: TCP
+      port: 9090
+  # Allow DNS
+  - to:
+    - namespaceSelector: {}
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    ports:
+    - protocol: UDP
+      port: 53
+{{- end }}
+
+---
+# Core Network Service NetworkPolicy
+{{- if .Values.coreNetwork.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-core-network
+  labels:
+    app.kubernetes.io/name: core-network
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/managed-by: helm
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: core-network
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow from core-simulator for callbacks
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: core-simulator
+    ports:
+    - protocol: TCP
+      port: {{ .Values.coreNetwork.port }}
+  egress:
+  # Allow to core-simulator (AMF/SMF subscriptions)
+  - to:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: core-simulator
+    ports:
+    - protocol: TCP
+      port: 8080
+    - protocol: TCP
+      port: 8081
+  # Allow to Redis
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis-stack
+    ports:
+    - protocol: TCP
+      port: 6379
+  # Allow DNS
+  - to:
+    - namespaceSelector: {}
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    ports:
+    - protocol: UDP
+      port: 53
+{{- end }}
+
+---
+# Core Simulator NetworkPolicy
+{{- if .Values.coreSimulator.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-core-simulator
+  labels:
+    app.kubernetes.io/name: core-simulator
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/managed-by: helm
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: core-simulator
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow from core-network for subscriptions
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: core-network
+    ports:
+    - protocol: TCP
+      port: 8080
+    - protocol: TCP
+      port: 8081
+  # Allow from Prometheus for metrics scraping
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: prometheus
+    ports:
+    - protocol: TCP
+      port: {{ .Values.coreSimulator.prometheusPort }}
+  egress:
+  # Allow to core-network for notifications
+  - to:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: core-network
+    ports:
+    - protocol: TCP
+      port: {{ .Values.coreNetwork.port }}
+  # Allow to Redis
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis-stack
+    ports:
+    - protocol: TCP
+      port: 6379
+  # Allow DNS
+  - to:
+    - namespaceSelector: {}
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    ports:
+    - protocol: UDP
+      port: 53
+{{- end }}
+
+---
+# NEF Services NetworkPolicy (applies to all NEF API services)
+{{- if .Values.asSessionWithQos.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-nef-services
+  labels:
+    app.kubernetes.io/name: nef-services
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/managed-by: helm
+spec:
+  podSelector:
+    matchExpressions:
+    - key: app.kubernetes.io/name
+      operator: In
+      values:
+      - as-session-with-qos
+      - traffic-influence
+      - ue-address
+      - ue-id
+      - ue-identity
+      - dataset-exporter
+      - ue-profile
+      - capif
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow from ingress controller
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 8080
+  # Allow inter-service communication
+  - from:
+    - podSelector:
+        matchExpressions:
+        - key: app.kubernetes.io/name
+          operator: In
+          values:
+          - as-session-with-qos
+          - traffic-influence
+          - monitoring-event
+          - ue-address
+          - ue-id
+          - ue-identity
+          - dataset-exporter
+          - ue-profile
+          - capif
+          - core-network
+          - core-simulator
+    ports:
+    - protocol: TCP
+      port: 8080
+  egress:
+  # Allow to Redis
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis-stack
+    ports:
+    - protocol: TCP
+      port: 6379
+  # Allow inter-service communication
+  - to:
+    - podSelector:
+        matchExpressions:
+        - key: app.kubernetes.io/name
+          operator: In
+          values:
+          - as-session-with-qos
+          - traffic-influence
+          - monitoring-event
+          - ue-address
+          - ue-id
+          - ue-identity
+          - dataset-exporter
+          - ue-profile
+          - capif
+          - core-network
+          - core-simulator
+    ports:
+    - protocol: TCP
+      port: 8080
+    - protocol: TCP
+      port: 9090
+  # Allow DNS
+  - to:
+    - namespaceSelector: {}
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    ports:
+    - protocol: UDP
+      port: 53
+  # Allow external API calls (e.g., to CAPIF, NRF, PCF)
+  - to:
+    - namespaceSelector: {}
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 8080
+    - protocol: TCP
+      port: 8084
+{{- end }}
+{{- end }}

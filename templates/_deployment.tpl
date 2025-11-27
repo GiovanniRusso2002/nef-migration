@@ -22,15 +22,33 @@ spec:
         checksum/config: {{ toYaml .svc.config.data | sha256sum | quote }}
         {{- end }}
     spec:
+      {{- if .svc.podSecurityContext }}
+      securityContext:
+        {{- toYaml .svc.podSecurityContext | nindent 8 }}
+      {{- else if .context.Values.global.defaultPodSecurityContext }}
+      securityContext:
+        {{- toYaml .context.Values.global.defaultPodSecurityContext | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ .name }}
           image: {{ .svc.image }}
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: {{ .svc.imagePullPolicy | default .context.Values.global.imagePullPolicy }}
+          {{- if .svc.securityContext }}
+          securityContext:
+            {{- toYaml .svc.securityContext | nindent 12 }}
+          {{- else if .context.Values.global.defaultSecurityContext }}
+          securityContext:
+            {{- toYaml .context.Values.global.defaultSecurityContext | nindent 12 }}
+          {{- end }}
           ports:
             - containerPort: {{ .svc.port }}
+              name: http
+              protocol: TCP
           {{- if .svc.extraPorts }}
           {{- range .svc.extraPorts }}
             - containerPort: {{ .targetPort | default .port }}
+              name: {{ .name }}
+              protocol: TCP
           {{- end }}
           {{- end }}
 
@@ -49,11 +67,21 @@ spec:
             {{- end }}
           {{- end }}
 
+          {{- if or (.svc.resources) (.context.Values.global.defaultResources) }}
+          resources:
+            {{- if .svc.resources }}
+            {{- toYaml .svc.resources | nindent 12 }}
+            {{- else }}
+            {{- toYaml .context.Values.global.defaultResources | nindent 12 }}
+            {{- end }}
+          {{- end }}
+
           {{- if and .svc.config (hasKey .svc.config "enabled") .svc.config.enabled }}
           volumeMounts:
             - name: config
               mountPath: /etc/config.yaml
               subPath: config.yaml
+              readOnly: true
           {{- end }}
 
       {{- if and .svc.config (hasKey .svc.config "enabled") .svc.config.enabled }}
@@ -61,5 +89,9 @@ spec:
         - name: config
           configMap:
             name: {{ include "openexposure.serviceFullname" . }}-config
+      {{- end }}
+      {{- with .svc.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
       {{- end }}
 {{- end }}
