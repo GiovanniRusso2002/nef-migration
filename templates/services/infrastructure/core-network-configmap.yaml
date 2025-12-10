@@ -12,18 +12,18 @@ data:
     cnHttpVersion: {{ .Values.coreNetwork.config.data.cnHttpVersion }}
     redisAddr: {{ .Values.redis.address | quote }}
     redisSvc: {{ .Values.redis.address | quote }}
-    amfIpAddr: {{ .Values.coreNetwork.config.data.amfIpAddr | quote }}
-    amfSubscrRoute: {{ .Values.coreNetwork.config.data.amfSubscrRoute | quote }}
-    amfApiRoute: {{ .Values.coreNetwork.config.data.amfApiRoute | quote }}
-    amfNotifyCorrelationId: {{ .Values.coreNetwork.config.data.amfNotifyCorrelationId | quote }}
-    amfNotificationId: {{ .Values.coreNetwork.config.data.amfNotificationId }}
-    amfNotificationForwardRoute: {{ .Values.coreNetwork.config.data.amfNotificationForwardRoute | quote }}
-    smfIpAddr: {{ .Values.coreNetwork.config.data.smfIpAddr | quote }}
-    smfSubscrRoute: {{ .Values.coreNetwork.config.data.smfSubscrRoute | quote }}
-    smfApiRoute: {{ .Values.coreNetwork.config.data.smfApiRoute | quote }}
-    smfNotifyCorrelationId: {{ .Values.coreNetwork.config.data.smfNotifyCorrelationId | quote }}
-    smfNotificationId: {{ .Values.coreNetwork.config.data.smfNotificationId }}
-    smfNotificationForwardRoute: {{ .Values.coreNetwork.config.data.smfNotificationForwardRoute | quote }}
+    amfIpAddr: {{ .Values.coreNetwork.config.data.amf.ipAddr | quote }}
+    amfSubscrRoute: {{ .Values.coreNetwork.config.data.amf.subscrRoute | quote }}
+    amfApiRoute: {{ .Values.coreNetwork.config.data.amf.apiRoute | quote }}
+    amfNotifyCorrelationId: {{ .Values.coreNetwork.config.data.amf.notifyCorrelationId | quote }}
+    amfNotificationId: {{ .Values.coreNetwork.config.data.amf.notificationId }}
+    amfNotificationForwardRoute: {{ .Values.coreNetwork.config.data.amf.notificationForwardRoute | quote }}
+    smfIpAddr: {{ .Values.coreNetwork.config.data.smf.ipAddr | quote }}
+    smfSubscrRoute: {{ .Values.coreNetwork.config.data.smf.subscrRoute | quote }}
+    smfApiRoute: {{ .Values.coreNetwork.config.data.smf.apiRoute | quote }}
+    smfNotifyCorrelationId: {{ .Values.coreNetwork.config.data.smf.notifyCorrelationId | quote }}
+    smfNotificationId: {{ .Values.coreNetwork.config.data.smf.notificationId }}
+    smfNotificationForwardRoute: {{ .Values.coreNetwork.config.data.smf.notificationForwardRoute | quote }}
     eventNotifyUri: {{ .Values.coreNetwork.config.data.eventNotifyUri | quote }}
     serverAddr: {{ .Values.coreNetwork.config.data.serverAddr | quote }}
 {{- end }}

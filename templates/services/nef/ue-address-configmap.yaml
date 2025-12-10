@@ -9,14 +9,14 @@ metadata:
 data:
   config.yaml: |
     nbi:
-      httpVersion: {{ .Values.ueAddress.config.data.nbi.httpVersion }}
-      useTLS: {{ .Values.ueAddress.config.data.nbi.useTLS }}
+      httpVersion: {{ .Values.ueAddress.config.data.nbi.httpVersion | default .Values.global.nbi.httpVersion }}
+      useTLS: {{ .Values.ueAddress.config.data.nbi.useTLS | default .Values.global.nbi.useTLS }}
       fqdn: {{ .Values.ueAddress.config.data.nbi.fqdn | quote }}
-      port: {{ .Values.ueAddress.config.data.nbi.port }}
+      port: {{ .Values.ueAddress.config.data.nbi.port | default .Values.global.nbi.port }}
     sbi:
-      identitySvc: {{ .Values.ueAddress.config.data.sbi.identitySvc | quote }}
+      identitySvc: {{ .Values.ueAddress.config.data.sbi.identitySvc | default .Values.global.sbi.identitySvc | quote }}
       profileSvc: {{ .Values.ueAddress.config.data.sbi.profileSvc | quote }}
-      httpVersion: {{ .Values.ueAddress.config.data.sbi.httpVersion }}
-    supportedFeatures: {{ .Values.ueAddress.config.data.supportedFeatures | quote }}
+      httpVersion: {{ .Values.ueAddress.config.data.sbi.httpVersion | default .Values.global.sbi.httpVersion }}
+    supportedFeatures: {{ .Values.ueAddress.config.data.supportedFeatures | default .Values.global.supportedFeatures | quote }}
     capifSvc: {{ .Values.capif.address | quote }}
 {{- end }}

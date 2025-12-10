@@ -19,6 +19,26 @@ services:
   grafana: true
 
 # =============================================================================
+# GLOBAL DEFAULTS
+# =============================================================================
+global:
+  imageTag: "develop"
+  imageRegistry: "openexposure"
+
+  # Default NBI (Northbound Interface) settings
+  nbi:
+    httpVersion: 1
+    useTLS: false
+    port: 8080
+
+  # Default SBI (Southbound Interface) settings
+  sbi:
+    httpVersion: 2
+    identitySvc: "http://nef-ue-identity:8080"
+
+  supportedFeatures: "3fff"
+
+# =============================================================================
 # IMAGES
 # =============================================================================
 images:
@@ -42,9 +62,10 @@ images:
 # REPLICAS
 # =============================================================================
 replicas:
-  default: 1 # replicaCount
-  # Override specific services here if you need different replica counts:
-  # serviceName: value
+  default: 1
+  # Override specific services if needed:
+  # coreSimulator: 2
+  # prometheus: 1
 
   # =============================================================================
   # REDIS
@@ -63,9 +84,13 @@ coreSimulator:
   httpVersion: 2
   fqdn: "core-simulator"
   simulationProfile:
-    plmn: { mcc: "001", mnc: "01" }
+    plmn:
+      mcc: "001"
+      mnc: "01"
     dnn: "internet"
-    slice: { sst: 1, sd: "FFFFFF" }
+    slice:
+      sst: 1
+      sd: "FFFFFF"
     numOfUe: 20
     numOfgNB: 10
     arrivalRate: 2
@@ -78,42 +103,26 @@ monitoringEvent:
     enabled: true
     data:
       nbi:
-        httpVersion: 1
-        useTLS: false
-        fqdn: "3gpp-monitoing-event.local"
-        port: 8080
+        fqdn: "3gpp-monitoring-event.local"
+        # httpVersion, useTLS, port: use global.nbi defaults
       sbi:
-        identitySvc: "http://nef-ue-identity:8080"
-        redisSvc: "{{ .Values.redis.uri }}"
+        # identitySvc: use global.sbi.identitySvc
         httpVersion: 2
-      supportedFeatures: "3fff"
-      capifSvc: "{{ .Values.capif.address }}"
-  nbi:
-    httpVersion: 1
-    useTLS: false
-    fqdn: "3gpp-monitoing-event.local"
-    port: 8080
-  sbi:
-    identitySvc: "http://nef-ue-identity:8080"
-    redisSvc: "{{ .Values.redis.uri }}"
-    httpVersion: 2
-  supportedFeatures: "3fff"
+      # supportedFeatures: uses global.supportedFeatures
 
-# =============================================================================
-# AS SESSION WITH QOS
-# =============================================================================
+      # =============================================================================
+      # AS SESSION WITH QOS
+      # =============================================================================
 asSessionWithQos:
   nbi:
-    httpVersion: 1
-    useTLS: false
     fqdn: "3gpp-as-session-with-qos.local"
-    port: 8080
+    # httpVersion, useTLS, port: use global.nbi defaults
   sbi:
     nrfSvc: "http://nrf.net01.3gpp.eurecom.fr"
     useNrf: false
     pcfSvc: "http://core-simulator:8080"
-    httpVersion: 2
-  supportedFeatures: "3fff"
+    # httpVersion: use global.sbi.httpVersion
+    # supportedFeatures: uses global.supportedFeatures
   qosConfig:
     qos-e:
       marBwDl: 120000
@@ -137,130 +146,96 @@ asSessionWithQos:
 # =============================================================================
 trafficInfluence:
   nbi:
-    httpVersion: 1
-    useTLS: false
     fqdn: "3gpp-traffic-influence.local"
-    port: 8080
+    # httpVersion, useTLS, port: use global.nbi defaults
   sbi:
     nrfSvc: "http://nrf.net01.3gpp.eurecom.fr"
     useNrf: false
     pcfSvc: "http://core-simulator:8080"
-    httpVersion: 2
+    # httpVersion: use global.sbi.httpVersion
 
-# =============================================================================
-# UE IDENTITY
-# =============================================================================
+    # =============================================================================
+    # UE IDENTITY
+    # =============================================================================
 ueIdentity:
   config:
     enabled: true
     data:
       httpPort: 8080
-      redisSvc: "{{ .Values.redis.address }}"
       nbiPort: 8080
       https: false
       httpVer: 1
-  nbi:
-    httpVersion: 1
-    useTLS: false
-    fqdn: "3gpp-ue-identity.local"
-    port: 8080
+      # redisSvc: resolved from redis.address in template
 
-# =============================================================================
-# UE ID
-# =============================================================================
+      # =============================================================================
+      # UE ID
+      # =============================================================================
 ueId:
   config:
     enabled: true
     data:
       nbi:
-        httpVersion: 1
-        useTLS: false
-        fqdn: 3gpp-ueid.local
-        port: 8080
+        fqdn: "3gpp-ueid.local"
+        # httpVersion, useTLS, port: use global.nbi defaults
       sbi:
-        identitySvc: "http://nef-ue-identity:8080"
         httpVersion: 1
-      supportedFeatures: "3fff"
-      capifSvc: "{{ .Values.capif.address }}"
-  nbi:
-    httpVersion: 1
-    useTLS: false
-    fqdn: "3gpp-ueid.local"
-    port: 8080
-  sbi:
-    identitySvc: "http://nef-ue-identity:8080"
-    httpVersion: 1
-  supportedFeatures: "3fff"
+        # identitySvc: use global.sbi.identitySvc
+        # supportedFeatures: uses global.supportedFeatures
+        # capifSvc: resolved from capif.address in template
 
-# =============================================================================
-# UE ADDRESS
-# =============================================================================
+        # =============================================================================
+        # UE ADDRESS
+        # =============================================================================
 ueAddress:
   config:
     enabled: true
     data:
       nbi:
-        httpVersion: 1
-        useTLS: false
-        fqdn: 3gpp-ue-address.local
-        port: 8080
+        fqdn: "3gpp-ue-address.local"
+        # httpVersion, useTLS, port: use global.nbi defaults
       sbi:
-        identitySvc: "http://nef-ue-identity:8080"
         profileSvc: "http://nef-ue-profile:8080"
         httpVersion: 1
-      supportedFeatures: "3fff"
-      capifSvc: "{{ .Values.capif.address }}"
-  nbi:
-    httpVersion: 1
-    useTLS: false
-    fqdn: "3gpp-ue-address.local"
-    port: 8080
-  sbi:
-    identitySvc: "http://nef-ue-identity:8080"
-    profileSvc: "http://nef-ue-profile:8080"
-    httpVersion: 1
-  supportedFeatures: "3fff"
+        # identitySvc: use global.sbi.identitySvc
+        # supportedFeatures: uses global.supportedFeatures
+        # capifSvc: resolved from capif.address in template
 
-# =============================================================================
-# UE PROFILE
-# =============================================================================
+        # =============================================================================
+        # UE PROFILE
+        # =============================================================================
 ueProfile:
   config:
     enabled: true
     data:
       https: false
       cnHttpVersion: 1
-      redisSvc: "{{ .Values.redis.address }}"
       nbiPort: 8080
-  nbi:
-    httpVersion: 1
-    useTLS: false
-    fqdn: "3gpp-ue-profile.local"
-    port: 8080
+      # redisSvc: resolved from redis.address in template
 
-# =============================================================================
-# CORE NETWORK
-# =============================================================================
+      # =============================================================================
+      # CORE NETWORK
+      # =============================================================================
 coreNetwork:
   config:
     enabled: true
     data:
       useNrf: false
       cnHttpVersion: "1"
-      redisAddr: "{{ .Values.redis.address }}"
-      redisSvc: "{{ .Values.redis.address }}"
-      amfIpAddr: "http://nef-core-simulator:8080"
-      amfSubscrRoute: "/namf-evts/v1"
-      amfApiRoute: "/test/amf"
-      amfNotifyCorrelationId: "string"
-      amfNotificationId: "1"
-      amfNotificationForwardRoute: "/sbi/notification/amf"
-      smfIpAddr: "http://nef-core-simulator:8080"
-      smfSubscrRoute: "/nsmf_event-exposure/v1"
-      smfApiRoute: "/test/smf"
-      smfNotifyCorrelationId: "string"
-      smfNotificationId: "2"
-      smfNotificationForwardRoute: "/sbi/notification/smf"
+      # redisAddr, redisSvc: resolved from redis.address in template
+      amf:
+        ipAddr: "http://nef-core-simulator:8080"
+        subscrRoute: "/namf-evts/v1"
+        apiRoute: "/test/amf"
+        notifyCorrelationId: "string"
+        notificationId: "1"
+        notificationForwardRoute: "/sbi/notification/amf"
+      smf:
+        ipAddr: "http://nef-core-simulator:8080"
+        subscrRoute: "/nsmf_event-exposure/v1"
+        apiRoute: "/test/smf"
+        notifyCorrelationId: "string"
+        notificationId: "2"
+        notificationForwardRoute: "/sbi/notification/smf"
       eventNotifyUri: "http://nef-core-network:9090"
       serverAddr: "0.0.0.0:9090"
 
@@ -277,8 +252,10 @@ capif:
 # GRAFANA
 # =============================================================================
 grafana:
-  # adminUser: "admin"
-  # adminPassword: set via secret nef-grafana-secret
+  # adminUser and adminPassword: set via secret nef-grafana-secret
+  dashboards:
+    prometheus:
+      datasourceUrl: "http://nef-prometheus:9090"
 
 # =============================================================================
 # INGRESS
@@ -286,12 +263,21 @@ grafana:
 ingress:
   enabled: true
   className: "nginx"
+  host: "nef.local"
+  tlsSecretName: "nef-tls-cert"
+
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
-    # TLS and HTTPS enforcement
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    # SSL/TLS
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-protocols: "TLSv1.2 TLSv1.3"
+    nginx.ingress.kubernetes.io/ssl-ciphers: "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-CHACHA20-POLY1305"
+    nginx.ingress.kubernetes.io/ssl-prefer-server-ciphers: "true"
+    # Rate limiting
+    nginx.ingress.kubernetes.io/limit-rps: "100"
+    nginx.ingress.kubernetes.io/limit-connections: "50"
     # Security headers
     nginx.ingress.kubernetes.io/configuration-snippet: |
       more_set_headers "X-Frame-Options: DENY";
@@ -299,48 +285,25 @@ ingress:
       more_set_headers "X-XSS-Protection: 1; mode=block";
       more_set_headers "Referrer-Policy: strict-origin-when-cross-origin";
       more_set_headers "Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'";
-    # TLS configuration
-    nginx.ingress.kubernetes.io/ssl-protocols: "TLSv1.2 TLSv1.3"
-    nginx.ingress.kubernetes.io/ssl-ciphers: "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-CHACHA20-POLY1305"
-    nginx.ingress.kubernetes.io/ssl-prefer-server-ciphers: "true"
-    # Rate limiting
-    nginx.ingress.kubernetes.io/limit-rps: "100"
-    nginx.ingress.kubernetes.io/limit-connections: "50"
-  hosts:
-  - host: nef.local
-    paths:
-    - path: /3gpp-as-session-with-qos
-      pathType: Prefix
-      service: nef-as-session-with-qos
-      port: 8080
-    - path: /3gpp-traffic-influence
-      pathType: Prefix
-      service: nef-traffic-influence
-      port: 8080
-    - path: /3gpp-monitoring-event
-      pathType: Prefix
-      service: nef-monitoring-event
-      port: 8080
-    - path: /3gpp-ue-id
-      pathType: Prefix
-      service: nef-ue-id
-      port: 8080
-    - path: /3gpp-ue-address
-      pathType: Prefix
-      service: nef-ue-address
-      port: 8080
-    - path: /grafana
-      pathType: Prefix
-      service: nef-grafana
-      port: 3000
-    - path: /prometheus
-      pathType: Prefix
-      service: nef-prometheus
-      port: 9090
-  tls:
-  - secretName: nef-tls-cert
-    hosts:
-    - nef.local
+
+  # Service paths (DRY: port 8080 is default for NEF services)
+  paths:
+  - path: /3gpp-as-session-with-qos
+    service: nef-as-session-with-qos
+  - path: /3gpp-traffic-influence
+    service: nef-traffic-influence
+  - path: /3gpp-monitoring-event
+    service: nef-monitoring-event
+  - path: /3gpp-ue-id
+    service: nef-ue-id
+  - path: /3gpp-ue-address
+    service: nef-ue-address
+  - path: /grafana
+    service: nef-grafana
+    port: 3000
+  - path: /prometheus
+    service: nef-prometheus
+    port: 9090
 
 # =============================================================================
 # POLICIES
@@ -352,43 +315,42 @@ podDisruptionBudget:
   enabled: true
 
 # =============================================================================
-# DEFAULTS (referenced by templates, override above if needed)
+# RESOURCE DEFAULTS
 # =============================================================================
-# global:
-#   imagePullPolicy: IfNotPresent
-#   imagePullSecrets: []
+# Resources are defined in templates with sensible defaults.
+# Override per-service if needed:
 #
-# # Default ports (8080 for most, exceptions below)
-# # ports:
-# #   coreNetwork: 9090
-# #   redisInsight: 5540
-# #   prometheus: 9090
-# #   grafana: 3000
+# resources:
+#   default:
+#     requests: { cpu: 100m, memory: 128Mi }
+#     limits: { cpu: 500m, memory: 512Mi }
+#   coreNetwork:
+#     requests: { cpu: 150m, memory: 256Mi }
+#     limits: { cpu: 1000m, memory: 1Gi }
+#   coreSimulator:
+#     requests: { cpu: 200m, memory: 256Mi }
+#     limits: { cpu: 1000m, memory: 1Gi }
+#   prometheus:
+#     requests: { cpu: 200m, memory: 512Mi }
+#     limits: { cpu: 2000m, memory: 2Gi }
+#   grafana:
+#     requests: { cpu: 100m, memory: 256Mi }
+#     limits: { cpu: 500m, memory: 1Gi }
+#   redis:
+#     requests: { cpu: 100m, memory: 256Mi }
+#     limits: { cpu: 1000m, memory: 1Gi }
+
+# =============================================================================
+# SECURITY CONTEXT DEFAULTS
+# =============================================================================
+# Default security context (applied in templates):
+#   runAsNonRoot: true
+#   runAsUser: 10001
+#   allowPrivilegeEscalation: false
+#   readOnlyRootFilesystem: true
+#   capabilities: { drop: [ALL] }
 #
-# # Default resources
-# # resources:
-# #   requests: { cpu: 100m, memory: 128Mi }
-# #   limits: { cpu: 500m, memory: 512Mi }
-#
-# # Heavier services use:
-# # resourceOverrides:
-# #   coreNetwork: { requests: { cpu: 150m, memory: 256Mi }, limits: { cpu: 1000m, memory: 1Gi } }
-# #   coreSimulator: { requests: { cpu: 200m, memory: 256Mi }, limits: { cpu: 1000m, memory: 1Gi } }
-# #   prometheus: { requests: { cpu: 200m, memory: 512Mi }, limits: { cpu: 2000m, memory: 2Gi } }
-# #   grafana: { requests: { cpu: 100m, memory: 256Mi }, limits: { cpu: 500m, memory: 1Gi } }
-# #   redis: { requests: { cpu: 100m, memory: 256Mi }, limits: { cpu: 1000m, memory: 1Gi } }
-#
-# # Default security context (user 10001)
-# # securityContext:
-# #   runAsNonRoot: true
-# #   runAsUser: 10001
-# #   allowPrivilegeEscalation: false
-# #   readOnlyRootFilesystem: true
-# #   capabilities: { drop: [ALL] }
-#
-# # Special users:
-# #   prometheus: 65534 (nobody)
-# #   grafana: 472
-# #   redisInsight: 1000 (also readOnlyRootFilesystem: false)
-#
-# # API config defaults in apiConfig section of templates
+# Exceptions (defined in service templates):
+#   prometheus: runAsUser: 65534 (nobody)
+#   grafana: runAsUser: 472
+#   redisInsight: runAsUser: 1000, readOnlyRootFilesystem: false

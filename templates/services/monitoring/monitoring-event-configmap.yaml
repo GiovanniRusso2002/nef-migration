@@ -9,14 +9,14 @@ metadata:
 data:
   config.yaml: |
     nbi:
-      httpVersion: {{ .Values.monitoringEvent.config.data.nbi.httpVersion }}
-      useTLS: {{ .Values.monitoringEvent.config.data.nbi.useTLS }}
+      httpVersion: {{ .Values.monitoringEvent.config.data.nbi.httpVersion | default .Values.global.nbi.httpVersion }}
+      useTLS: {{ .Values.monitoringEvent.config.data.nbi.useTLS | default .Values.global.nbi.useTLS }}
       fqdn: {{ .Values.monitoringEvent.config.data.nbi.fqdn | quote }}
-      port: {{ .Values.monitoringEvent.config.data.nbi.port }}
+      port: {{ .Values.monitoringEvent.config.data.nbi.port | default .Values.global.nbi.port }}
     sbi:
-      identitySvc: {{ .Values.monitoringEvent.config.data.sbi.identitySvc | quote }}
+      identitySvc: {{ .Values.monitoringEvent.config.data.sbi.identitySvc | default .Values.global.sbi.identitySvc | quote }}
       redisSvc: {{ .Values.redis.uri | quote }}
-      httpVersion: {{ .Values.monitoringEvent.config.data.sbi.httpVersion }}
-    supportedFeatures: {{ .Values.monitoringEvent.config.data.supportedFeatures | quote }}
+      httpVersion: {{ .Values.monitoringEvent.config.data.sbi.httpVersion | default .Values.global.sbi.httpVersion }}
+    supportedFeatures: {{ .Values.monitoringEvent.config.data.supportedFeatures | default .Values.global.supportedFeatures | quote }}
     capifSvc: {{ .Values.capif.address | quote }}
 {{- end }}

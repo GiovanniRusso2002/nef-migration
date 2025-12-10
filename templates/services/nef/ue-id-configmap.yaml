@@ -9,13 +9,13 @@ metadata:
 data:
   config.yaml: |
     nbi:
-      httpVersion: {{ .Values.ueId.config.data.nbi.httpVersion }}
-      useTLS: {{ .Values.ueId.config.data.nbi.useTLS }}
+      httpVersion: {{ .Values.ueId.config.data.nbi.httpVersion | default .Values.global.nbi.httpVersion }}
+      useTLS: {{ .Values.ueId.config.data.nbi.useTLS | default .Values.global.nbi.useTLS }}
       fqdn: {{ .Values.ueId.config.data.nbi.fqdn | quote }}
-      port: {{ .Values.ueId.config.data.nbi.port }}
+      port: {{ .Values.ueId.config.data.nbi.port | default .Values.global.nbi.port }}
     sbi:
-      identitySvc: {{ .Values.ueId.config.data.sbi.identitySvc | quote }}
-      httpVersion: {{ .Values.ueId.config.data.sbi.httpVersion }}
-    supportedFeatures: {{ .Values.ueId.config.data.supportedFeatures | quote }}
+      identitySvc: {{ .Values.ueId.config.data.sbi.identitySvc | default .Values.global.sbi.identitySvc | quote }}
+      httpVersion: {{ .Values.ueId.config.data.sbi.httpVersion | default .Values.global.sbi.httpVersion }}
+    supportedFeatures: {{ .Values.ueId.config.data.supportedFeatures | default .Values.global.supportedFeatures | quote }}
     capifSvc: {{ .Values.capif.address | quote }}
 {{- end }}
