@@ -481,8 +481,13 @@ spec:
     ports:
     - protocol: UDP
       port: 53
+  # Allow egress to external services (CAPIF auth server)
   - to:
-    - namespaceSelector: {}
+    - ipBlock:
+        cidr: 0.0.0.0/0
+        except:
+        - 10.0.0.0/8
+        - 192.168.0.0/16
     ports:
     - protocol: TCP
       port: 443
@@ -490,5 +495,14 @@ spec:
       port: 8080
     - protocol: TCP
       port: 8084
+  # Allow egress to specific external CAPIF auth server subnet
+  - to:
+    - ipBlock:
+        cidr: 172.21.0.0/16
+    ports:
+    - protocol: TCP
+      port: 8084
+    - protocol: TCP
+      port: 443
 {{- end }}
 {{- end }}
