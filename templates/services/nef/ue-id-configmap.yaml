@@ -1,0 +1,21 @@
+{{- if and .Values.services.ueId .Values.ueId.config.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-ue-id-config
+  labels:
+    app.kubernetes.io/name: ue-id
+    app.kubernetes.io/instance: {{ .Release.Name }}
+data:
+  config.yaml: |
+    nbi:
+      httpVersion: {{ .Values.ueId.config.data.nbi.httpVersion }}
+      useTLS: {{ .Values.ueId.config.data.nbi.useTLS }}
+      fqdn: {{ .Values.ueId.config.data.nbi.fqdn | quote }}
+      port: {{ .Values.ueId.config.data.nbi.port }}
+    sbi:
+      identitySvc: {{ .Values.ueId.config.data.sbi.identitySvc | quote }}
+      httpVersion: {{ .Values.ueId.config.data.sbi.httpVersion }}
+    supportedFeatures: {{ .Values.ueId.config.data.supportedFeatures | quote }}
+    capifSvc: {{ .Values.capif.address | quote }}
+{{- end }}

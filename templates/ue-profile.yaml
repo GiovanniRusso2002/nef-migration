@@ -1,9 +1,0 @@
-{{- if .Values.ueProfile.enabled }}
-
-{{ include "openexposure.configmap" (dict "name" "ue-profile" "svc" .Values.ueProfile "context" .) }}
-
----
-{{ include "openexposure.deployment" (dict "name" "ue-profile" "svc" .Values.ueProfile "context" .) }}
-
-{{- end }}
-

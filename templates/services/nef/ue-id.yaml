@@ -1,0 +1,4 @@
+{{- if .Values.services.ueId }}
+{{ include "openexposure.deployment" (dict "name" "ue-id" "key" "ueId" "context" . "hasConfig" true "env" (list (dict "name" "REDIS_URL" "value" .Values.redis.address))) }}
+{{- end }}
+

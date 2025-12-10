@@ -1,0 +1,3 @@
+{{- if .Values.services.trafficInfluence }}
+{{ include "openexposure.service" (dict "name" "traffic-influence" "key" "trafficInfluence" "context" .) }}
+{{- end }}

@@ -1,0 +1,101 @@
+{{- if .Values.podDisruptionBudget.enabled }}
+---
+# Monitoring Event PodDisruptionBudget
+{{- if .Values.services.monitoringEvent }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Release.Name }}-monitoring-event
+  labels:
+    app.kubernetes.io/name: monitoring-event
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/managed-by: helm
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: monitoring-event
+      app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+---
+# UE Identity PodDisruptionBudget
+{{- if .Values.services.ueIdentity }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Release.Name }}-ue-identity
+  labels:
+    app.kubernetes.io/name: ue-identity
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/managed-by: helm
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ue-identity
+      app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+---
+# Core Simulator PodDisruptionBudget
+{{- if .Values.services.coreSimulator }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Release.Name }}-core-simulator
+  labels:
+    app.kubernetes.io/name: core-simulator
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/managed-by: helm
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: core-simulator
+      app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+---
+# Redis PodDisruptionBudget
+{{- if .Values.services.redis }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Release.Name }}-redis
+  labels:
+    app.kubernetes.io/name: redis
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/managed-by: helm
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: redis
+      app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+---
+# Prometheus PodDisruptionBudget
+{{- if .Values.services.prometheus }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Release.Name }}-prometheus
+  labels:
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/managed-by: helm
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prometheus
+      app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+{{- end }}

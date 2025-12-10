@@ -1,0 +1,4 @@
+{{- if .Values.services.monitoringEvent }}
+{{ include "openexposure.service" (dict "name" "monitoring-event" "key" "monitoringEvent" "context" .) }}
+{{- end }}
+

@@ -1,0 +1,3 @@
+{{- if .Values.services.asSessionWithQos }}
+{{ include "openexposure.deployment" (dict "name" "as-session-with-qos" "key" "asSessionWithQos" "context" . "hasConfig" true "env" (list (dict "name" "CONFIG_FILE" "value" "/etc/config.yaml"))) }}
+{{- end }}

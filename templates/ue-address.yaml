@@ -1,9 +1,0 @@
-{{- if .Values.ueAddress.enabled }}
-
-{{ include "openexposure.configmap" (dict "name" "ue-address" "svc" .Values.ueAddress "context" .) }}
-
----
-{{ include "openexposure.deployment" (dict "name" "ue-address" "svc" .Values.ueAddress "context" .) }}
-
-{{- end }}
-

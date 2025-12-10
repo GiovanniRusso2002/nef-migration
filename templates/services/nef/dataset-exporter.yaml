@@ -1,0 +1,3 @@
+{{- if .Values.services.datasetExporter }}
+{{ include "openexposure.deployment" (dict "name" "dataset-exporter" "key" "datasetExporter" "context" . "env" (list (dict "name" "REDIS_URL" "value" .Values.redis.address))) }}
+{{- end }}

@@ -1,0 +1,15 @@
+{{- if and .Values.services.ueProfile .Values.ueProfile.config.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-ue-profile-config
+  labels:
+    app.kubernetes.io/name: ue-profile
+    app.kubernetes.io/instance: {{ .Release.Name }}
+data:
+  config.yaml: |
+    https: {{ .Values.ueProfile.config.data.https }}
+    cnHttpVersion: {{ .Values.ueProfile.config.data.cnHttpVersion }}
+    redisSvc: {{ .Values.redis.address | quote }}
+    nbiPort: {{ .Values.ueProfile.config.data.nbiPort }}
+{{- end }}

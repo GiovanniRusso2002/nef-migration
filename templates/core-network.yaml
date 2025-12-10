@@ -1,7 +1,0 @@
-
-{{- if .Values.coreNetwork.enabled }}
-
-{{ include "openexposure.deployment" (dict "name" "core-network" "svc" .Values.coreNetwork "context" .) }}
-
-{{- end }}
-

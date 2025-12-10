@@ -1,0 +1,3 @@
+{{- if .Values.services.datasetExporter }}
+{{ include "openexposure.service" (dict "name" "dataset-exporter" "key" "datasetExporter" "context" .) }}
+{{- end }}

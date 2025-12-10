@@ -1,4 +1,0 @@
-{{- if .Values.capif.enabled }}
-{{ include "openexposure.service" (dict "name" "capif" "svc" .Values.capif "context" .) }}
-{{- end }}
-

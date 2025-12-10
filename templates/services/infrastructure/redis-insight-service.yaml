@@ -1,0 +1,3 @@
+{{- if .Values.services.redisInsight }}
+{{ include "openexposure.service" (dict "name" "redis-insight" "key" "redisInsight" "context" . "port" 5540) }}
+{{- end }}

@@ -1,0 +1,32 @@
+{{- if .Values.services.coreSimulator }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-core-simulator-config
+  labels:
+    app.kubernetes.io/name: core-simulator
+    app.kubernetes.io/instance: {{ .Release.Name }}
+data:
+  config.yaml: |
+    httpVersion: 2
+    fqdn: core-simulator
+    sbiPort: 8080
+    oamPort: 8081
+    initOnStartup: true
+
+    redis:
+      address: {{ .Values.redis.address | quote }}
+
+    simulationProfile:
+      plmn:
+        mcc: {{ .Values.coreSimulator.simulationProfile.plmn.mcc | quote }}
+        mnc: {{ .Values.coreSimulator.simulationProfile.plmn.mnc | quote }}
+      dnn: {{ .Values.coreSimulator.simulationProfile.dnn | quote }}
+      slice:
+        sst: {{ .Values.coreSimulator.simulationProfile.slice.sst }}
+        sd: {{ .Values.coreSimulator.simulationProfile.slice.sd | quote }}
+      numOfUe: {{ .Values.coreSimulator.simulationProfile.numOfUe }}
+      numOfgNB: {{ .Values.coreSimulator.simulationProfile.numOfgNB }}
+      arrivalRate: {{ .Values.coreSimulator.simulationProfile.arrivalRate }}
+
+{{- end }}
