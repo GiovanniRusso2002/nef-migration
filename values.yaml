@@ -1,9 +1,5 @@
 # =============================================================================
-# NEF Helm Chart - Configuration Values
-# =============================================================================
-
-# =============================================================================
-# SERVICE TOGGLES - Enable/disable services
+# SERVICE TOGGLES
 # =============================================================================
 services:
   asSessionWithQos: true
@@ -61,6 +57,11 @@ redis:
 # CORE SIMULATOR
 # =============================================================================
 coreSimulator:
+  sbiPort: 8080
+  oamPort: 8081
+  initOnStartup: true
+  httpVersion: 2
+  fqdn: "core-simulator"
   simulationProfile:
     plmn: { mcc: "001", mnc: "01" }
     dnn: "internet"
@@ -262,24 +263,6 @@ coreNetwork:
       smfNotificationForwardRoute: "/sbi/notification/smf"
       eventNotifyUri: "http://nef-core-network:9090"
       serverAddr: "0.0.0.0:9090"
-  amf:
-    ipAddr: "http://nef-core-simulator:8080"
-    subscrRoute: "/namf-evts/v1"
-    apiRoute: "/test/amf"
-    notifyCorrelationId: "string"
-    notificationId: "1"
-    notificationForwardRoute: "/sbi/notification/amf"
-  smf:
-    ipAddr: "http://nef-core-simulator:8080"
-    subscrRoute: "/nsmf_event-exposure/v1"
-    apiRoute: "/test/smf"
-    notifyCorrelationId: "string"
-    notificationId: "2"
-    notificationForwardRoute: "/sbi/notification/smf"
-  eventNotifyUri: "http://nef-core-network:9090"
-  serverAddr: "0.0.0.0:9090"
-  httpVersion: "1"
-  useNrf: false
 
 # =============================================================================
 # CAPIF

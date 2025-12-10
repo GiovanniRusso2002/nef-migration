@@ -8,12 +8,11 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
 data:
   config.yaml: |
-    httpVersion: 2
-    fqdn: core-simulator
-    sbiPort: 8080
-    oamPort: 8081
-    initOnStartup: true
-
+    httpVersion: {{ .Values.coreSimulator.httpVersion }}
+    fqdn: {{ .Values.coreSimulator.fqdn | quote }}
+    sbiPort: {{ .Values.coreSimulator.sbiPort }}
+    oamPort: {{ .Values.coreSimulator.oamPort }}
+    initOnStartup: {{ .Values.coreSimulator.initOnStartup }}
     redis:
       address: {{ .Values.redis.address | quote }}
 
