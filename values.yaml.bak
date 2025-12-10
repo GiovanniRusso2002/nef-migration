@@ -50,9 +50,9 @@ replicas:
   # Override specific services here if you need different replica counts:
   # serviceName: value
 
-  # =============================================================================
-  # REDIS
-  # =============================================================================
+# =============================================================================
+# REDIS
+# =============================================================================
 redis:
   address: "redis-stack:6379"
   uri: "redis://redis-stack:6379/"
@@ -73,20 +73,6 @@ coreSimulator:
 # MONITORING EVENT
 # =============================================================================
 monitoringEvent:
-  config:
-    enabled: true
-    data:
-      nbi:
-        httpVersion: 1
-        useTLS: false
-        fqdn: "3gpp-monitoing-event.local"
-        port: 8080
-      sbi:
-        identitySvc: "http://nef-ue-identity:8080"
-        redisSvc: "{{ .Values.redis.uri }}"
-        httpVersion: 2
-      supportedFeatures: "3fff"
-      capifSvc: "{{ .Values.capif.address }}"
   nbi:
     httpVersion: 1
     useTLS: false
@@ -150,14 +136,6 @@ trafficInfluence:
 # UE IDENTITY
 # =============================================================================
 ueIdentity:
-  config:
-    enabled: true
-    data:
-      httpPort: 8080
-      redisSvc: "{{ .Values.redis.address }}"
-      nbiPort: 8080
-      https: false
-      httpVer: 1
   nbi:
     httpVersion: 1
     useTLS: false
@@ -168,19 +146,6 @@ ueIdentity:
 # UE ID
 # =============================================================================
 ueId:
-  config:
-    enabled: true
-    data:
-      nbi:
-        httpVersion: 1
-        useTLS: false
-        fqdn: 3gpp-ueid.local
-        port: 8080
-      sbi:
-        identitySvc: "http://nef-ue-identity:8080"
-        httpVersion: 1
-      supportedFeatures: "3fff"
-      capifSvc: "{{ .Values.capif.address }}"
   nbi:
     httpVersion: 1
     useTLS: false
@@ -195,20 +160,6 @@ ueId:
 # UE ADDRESS
 # =============================================================================
 ueAddress:
-  config:
-    enabled: true
-    data:
-      nbi:
-        httpVersion: 1
-        useTLS: false
-        fqdn: 3gpp-ue-address.local
-        port: 8080
-      sbi:
-        identitySvc: "http://nef-ue-identity:8080"
-        profileSvc: "http://nef-ue-profile:8080"
-        httpVersion: 1
-      supportedFeatures: "3fff"
-      capifSvc: "{{ .Values.capif.address }}"
   nbi:
     httpVersion: 1
     useTLS: false
@@ -224,13 +175,6 @@ ueAddress:
 # UE PROFILE
 # =============================================================================
 ueProfile:
-  config:
-    enabled: true
-    data:
-      https: false
-      cnHttpVersion: 1
-      redisSvc: "{{ .Values.redis.address }}"
-      nbiPort: 8080
   nbi:
     httpVersion: 1
     useTLS: false
@@ -241,27 +185,6 @@ ueProfile:
 # CORE NETWORK
 # =============================================================================
 coreNetwork:
-  config:
-    enabled: true
-    data:
-      useNrf: false
-      cnHttpVersion: "1"
-      redisAddr: "{{ .Values.redis.address }}"
-      redisSvc: "{{ .Values.redis.address }}"
-      amfIpAddr: "http://nef-core-simulator:8080"
-      amfSubscrRoute: "/namf-evts/v1"
-      amfApiRoute: "/test/amf"
-      amfNotifyCorrelationId: "string"
-      amfNotificationId: "1"
-      amfNotificationForwardRoute: "/sbi/notification/amf"
-      smfIpAddr: "http://nef-core-simulator:8080"
-      smfSubscrRoute: "/nsmf_event-exposure/v1"
-      smfApiRoute: "/test/smf"
-      smfNotifyCorrelationId: "string"
-      smfNotificationId: "2"
-      smfNotificationForwardRoute: "/sbi/notification/smf"
-      eventNotifyUri: "http://nef-core-network:9090"
-      serverAddr: "0.0.0.0:9090"
   amf:
     ipAddr: "http://nef-core-simulator:8080"
     subscrRoute: "/namf-evts/v1"
@@ -278,7 +201,7 @@ coreNetwork:
     notificationForwardRoute: "/sbi/notification/smf"
   eventNotifyUri: "http://nef-core-network:9090"
   serverAddr: "0.0.0.0:9090"
-  httpVersion: "1"
+  httpVersion: 1
   useNrf: false
 
 # =============================================================================
@@ -294,6 +217,7 @@ capif:
 # GRAFANA
 # =============================================================================
 grafana:
+  # TODO: remove authentcation from grafana 
   # adminUser: "admin"
   # adminPassword: set via secret nef-grafana-secret
 

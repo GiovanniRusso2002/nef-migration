@@ -1,3 +1,0 @@
-{{- if .Values.trafficInfluence.enabled }}
-{{ include "openexposure.service" (dict "name" "traffic-influence" "svc" .Values.trafficInfluence "context" .) }}
-{{- end }}

@@ -1,0 +1,29 @@
+{{- if and .Values.services.coreNetwork .Values.coreNetwork.config.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-core-network-config
+  labels:
+    app.kubernetes.io/name: core-network
+    app.kubernetes.io/instance: {{ .Release.Name }}
+data:
+  config.yaml: |
+    useNrf: {{ .Values.coreNetwork.config.data.useNrf }}
+    cnHttpVersion: {{ .Values.coreNetwork.config.data.cnHttpVersion }}
+    redisAddr: {{ .Values.redis.address | quote }}
+    redisSvc: {{ .Values.redis.address | quote }}
+    amfIpAddr: {{ .Values.coreNetwork.config.data.amfIpAddr | quote }}
+    amfSubscrRoute: {{ .Values.coreNetwork.config.data.amfSubscrRoute | quote }}
+    amfApiRoute: {{ .Values.coreNetwork.config.data.amfApiRoute | quote }}
+    amfNotifyCorrelationId: {{ .Values.coreNetwork.config.data.amfNotifyCorrelationId | quote }}
+    amfNotificationId: {{ .Values.coreNetwork.config.data.amfNotificationId }}
+    amfNotificationForwardRoute: {{ .Values.coreNetwork.config.data.amfNotificationForwardRoute | quote }}
+    smfIpAddr: {{ .Values.coreNetwork.config.data.smfIpAddr | quote }}
+    smfSubscrRoute: {{ .Values.coreNetwork.config.data.smfSubscrRoute | quote }}
+    smfApiRoute: {{ .Values.coreNetwork.config.data.smfApiRoute | quote }}
+    smfNotifyCorrelationId: {{ .Values.coreNetwork.config.data.smfNotifyCorrelationId | quote }}
+    smfNotificationId: {{ .Values.coreNetwork.config.data.smfNotificationId }}
+    smfNotificationForwardRoute: {{ .Values.coreNetwork.config.data.smfNotificationForwardRoute | quote }}
+    eventNotifyUri: {{ .Values.coreNetwork.config.data.eventNotifyUri | quote }}
+    serverAddr: {{ .Values.coreNetwork.config.data.serverAddr | quote }}
+{{- end }}

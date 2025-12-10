@@ -1,0 +1,4 @@
+{{- if .Values.services.capif }}
+{{ include "openexposure.service" (dict "name" "capif" "key" "capif" "context" .) }}
+{{- end }}
+

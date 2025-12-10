@@ -1,0 +1,17 @@
+{{- if .Values.services.trafficInfluence }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-traffic-influence-config
+  labels:
+    app.kubernetes.io/name: traffic-influence
+    app.kubernetes.io/instance: {{ .Release.Name }}
+data:
+  config.yaml: |
+    redis:
+      address: {{ .Values.redis.address | quote }}
+    capif:
+      fqdn: {{ .Values.capif.fqdn | quote }}
+      authPort: {{ .Values.capif.authPort | quote }}
+      username: {{ .Values.capif.username | quote }}
+{{- end }}

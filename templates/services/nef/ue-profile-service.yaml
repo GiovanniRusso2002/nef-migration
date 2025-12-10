@@ -1,0 +1,4 @@
+{{- if .Values.services.ueProfile }}
+{{ include "openexposure.service" (dict "name" "ue-profile" "key" "ueProfile" "context" .) }}
+{{- end }}
+

@@ -1,0 +1,3 @@
+{{- if .Values.services.trafficInfluence }}
+{{ include "openexposure.deployment" (dict "name" "traffic-influence" "key" "trafficInfluence" "context" . "hasConfig" true "env" (list (dict "name" "CONFIG_FILE" "value" "/etc/config.yaml"))) }}
+{{- end }}

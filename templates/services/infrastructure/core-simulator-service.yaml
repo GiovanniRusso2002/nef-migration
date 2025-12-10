@@ -1,0 +1,3 @@
+{{- if .Values.services.coreSimulator }}
+{{ include "openexposure.service" (dict "name" "core-simulator" "key" "coreSimulator" "context" .) }}
+{{- end }}

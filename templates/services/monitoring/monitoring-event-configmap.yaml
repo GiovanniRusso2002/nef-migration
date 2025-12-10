@@ -1,0 +1,22 @@
+{{- if and .Values.services.monitoringEvent .Values.monitoringEvent.config.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-monitoring-event-config
+  labels:
+    app.kubernetes.io/name: monitoring-event
+    app.kubernetes.io/instance: {{ .Release.Name }}
+data:
+  config.yaml: |
+    nbi:
+      httpVersion: {{ .Values.monitoringEvent.config.data.nbi.httpVersion }}
+      useTLS: {{ .Values.monitoringEvent.config.data.nbi.useTLS }}
+      fqdn: {{ .Values.monitoringEvent.config.data.nbi.fqdn | quote }}
+      port: {{ .Values.monitoringEvent.config.data.nbi.port }}
+    sbi:
+      identitySvc: {{ .Values.monitoringEvent.config.data.sbi.identitySvc | quote }}
+      redisSvc: {{ .Values.redis.uri | quote }}
+      httpVersion: {{ .Values.monitoringEvent.config.data.sbi.httpVersion }}
+    supportedFeatures: {{ .Values.monitoringEvent.config.data.supportedFeatures | quote }}
+    capifSvc: {{ .Values.capif.address | quote }}
+{{- end }}

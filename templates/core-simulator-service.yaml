@@ -1,3 +1,0 @@
-{{- if .Values.coreSimulator.enabled }}
-{{ include "openexposure.service" (dict "name" "core-simulator" "svc" .Values.coreSimulator "context" .) }}
-{{- end }}

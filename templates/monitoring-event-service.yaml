@@ -1,4 +1,0 @@
-{{- if .Values.monitoringEvent.enabled }}
-{{ include "openexposure.service" (dict "name" "monitoring-event" "svc" .Values.monitoringEvent "context" .) }}
-{{- end }}
-

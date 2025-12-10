@@ -1,0 +1,4 @@
+{{- if .Values.services.capif }}
+{{ include "openexposure.deployment" (dict "name" "capif" "key" "capif" "context" . "env" (list (dict "name" "CAPIF_FQDN" "value" .Values.capif.fqdn) (dict "name" "CAPIF_AUTH_PORT" "value" .Values.capif.authPort) (dict "name" "CAPIF_USERNAME" "value" .Values.capif.username) (dict "name" "CAPIF_PASSWORD" "valueFrom" (dict "secretKeyRef" (dict "name" (printf "%s-secrets" .Release.Name) "key" "capif-password"))))) }}
+{{- end }}
+

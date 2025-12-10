@@ -1,3 +1,0 @@
-{{- if .Values.asSessionWithQos.enabled }}
-{{ include "openexposure.service" (dict "name" "as-session-with-qos" "svc" .Values.asSessionWithQos "context" .) }}
-{{- end }}

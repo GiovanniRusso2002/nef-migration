@@ -1,5 +1,0 @@
-{{- if .Values.asSessionWithQos.enabled }}
-
-{{ include "openexposure.deployment" (dict "name" "as-session-with-qos" "svc" .Values.asSessionWithQos "context" .) }}
-
-{{- end }}

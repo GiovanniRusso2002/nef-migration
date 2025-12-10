@@ -1,9 +1,0 @@
-{{- if .Values.ueIdentity.enabled }}
-
-{{ include "openexposure.configmap" (dict "name" "ue-identity" "svc" .Values.ueIdentity "context" .) }}
-
----
-{{ include "openexposure.deployment" (dict "name" "ue-identity" "svc" .Values.ueIdentity "context" .) }}
-
-{{- end }}
-

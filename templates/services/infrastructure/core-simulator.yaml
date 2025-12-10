@@ -1,0 +1,4 @@
+
+{{- if .Values.services.coreSimulator }}
+{{ include "openexposure.deployment" (dict "name" "core-simulator" "key" "coreSimulator" "context" . "hasConfig" true "env" (list (dict "name" "CONFIG_FILE" "value" "/etc/config.yaml"))) }}
+{{- end }}

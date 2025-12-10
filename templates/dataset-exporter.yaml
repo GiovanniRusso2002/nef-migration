@@ -1,5 +1,0 @@
-{{- if .Values.datasetExporter.enabled }}
-
-{{ include "openexposure.deployment" (dict "name" "dataset-exporter" "svc" .Values.datasetExporter "context" .) }}
-
-{{- end }}
