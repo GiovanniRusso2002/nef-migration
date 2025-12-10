@@ -465,7 +465,8 @@ data:
         },
         {
           "datasource": {
-            "type": "prometheus"
+            "type": "prometheus",
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -577,7 +578,10 @@ data:
       "templating": {
         "list": [
           {
-            "datasource": "prometheus",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
             "includeAll": true,
             "label": "UE ID",
             "multi": true,
@@ -588,7 +592,10 @@ data:
             "type": "query"
           },
           {
-            "datasource": "prometheus",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
             "includeAll": true,
             "label": "Simulation ID",
             "name": "simulationId",

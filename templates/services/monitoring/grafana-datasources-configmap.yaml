@@ -11,7 +11,8 @@ data:
   datasources.yaml: |
     apiVersion: 1
     datasources:
-      - name: Prometheus
+      - name: prometheus
+        uid: prometheus
         type: prometheus
         access: proxy
         url: http://{{ .Release.Name }}-prometheus:9090

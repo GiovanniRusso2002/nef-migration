@@ -41,6 +41,14 @@ spec:
     ports:
     - protocol: TCP
       port: 8080
+  # Allow Prometheus to scrape metrics
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: prometheus
+    ports:
+    - protocol: TCP
+      port: 8080
   egress:
   - to:
     - podSelector:
@@ -157,6 +165,7 @@ spec:
     - protocol: TCP
       port: 9090
   egress:
+  # Allow scraping metrics from all pods in the namespace
   - to:
     - podSelector: {}
     ports:
@@ -164,11 +173,33 @@ spec:
       port: 8080
     - protocol: TCP
       port: 9090
+  # Allow access to Kubernetes API server for service discovery (ClusterIP range)
   - to:
-    - namespaceSelector: {}
+    - ipBlock:
+        cidr: 10.96.0.0/12
     ports:
     - protocol: TCP
       port: 443
+    - protocol: TCP
+      port: 6443
+  # Allow access to Kubernetes API server actual endpoint (node network)
+  - to:
+    - ipBlock:
+        cidr: 172.16.0.0/12
+    ports:
+    - protocol: TCP
+      port: 6443
+  # Also allow to kube-system namespace for API server pods
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 6443
+  # Allow DNS resolution
   - to:
     - namespaceSelector: {}
       podSelector:
@@ -251,6 +282,14 @@ spec:
     ports:
     - protocol: TCP
       port: 9090
+  # Allow Prometheus to scrape metrics
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: prometheus
+    ports:
+    - protocol: TCP
+      port: 9090
   egress:
   - to:
     - podSelector:
@@ -307,13 +346,14 @@ spec:
       port: 8080
     - protocol: TCP
       port: 8081
+  # Allow Prometheus to scrape metrics on port 9090
   - from:
     - podSelector:
         matchLabels:
           app.kubernetes.io/name: prometheus
     ports:
     - protocol: TCP
-      port: 8080
+      port: 9090
   egress:
   - to:
     - podSelector:
@@ -372,6 +412,14 @@ spec:
     - namespaceSelector:
         matchLabels:
           name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 8080
+  # Allow Prometheus to scrape metrics
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: prometheus
     ports:
     - protocol: TCP
       port: 8080

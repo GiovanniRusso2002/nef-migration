@@ -5,11 +5,13 @@ Parameters:
   - key: values.yaml key for this service (e.g., "asSessionWithQos")
   - context: root context (.)
   - port: container port (default 8080)
+  - metricsPort: prometheus metrics port (default same as port)
   - hasConfig: whether service has configmap (default false)
   - env: list of environment variables (optional)
 */}}
 {{- define "openexposure.deployment" -}}
 {{- $port := .port | default 8080 -}}
+{{- $metricsPort := .metricsPort | default $port -}}
 {{- $hasConfig := .hasConfig | default false -}}
 apiVersion: apps/v1
 kind: Deployment
@@ -28,7 +30,7 @@ spec:
         {{ include "openexposure.selectorLabels" . | nindent 8 }}
       annotations:
         prometheus.io/scrape: "true"
-        prometheus.io/port: {{ $port | quote }}
+        prometheus.io/port: {{ $metricsPort | quote }}
         prometheus.io/path: "/metrics"
     spec:
       securityContext:
