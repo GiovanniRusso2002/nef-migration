@@ -8,8 +8,8 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
 data:
   config.yaml: |
-    https: {{ .Values.ueProfile.config.data.https }}
-    cnHttpVersion: {{ .Values.ueProfile.config.data.cnHttpVersion }}
+    https: {{ .Values.ueProfile.config.data.https | default .Values.global.https }}
+    cnHttpVersion: {{ .Values.ueProfile.config.data.cnHttpVersion | default .Values.global.cnHttpVersion }}
     redisSvc: {{ .Values.redis.address | quote }}
-    nbiPort: {{ .Values.ueProfile.config.data.nbiPort }}
+    nbiPort: {{ .Values.ueProfile.config.data.nbiPort | default .Values.global.nbi.port }}
 {{- end }}

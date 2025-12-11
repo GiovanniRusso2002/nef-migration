@@ -35,6 +35,15 @@ global:
   sbi:
     httpVersion: 2
     identitySvc: "http://nef-ue-identity:8080"
+    nrfSvc: "http://nrf.net01.3gpp.eurecom.fr"
+    useNrf: false
+    pcfSvc: "http://core-simulator:8080"
+
+  # Core Network HTTP version (used by ueProfile, coreNetwork)
+  cnHttpVersion: 1
+
+  # Common service defaults
+  https: false
 
   supportedFeatures: "3fff"
 
@@ -117,10 +126,8 @@ asSessionWithQos:
   nbi:
     fqdn: "3gpp-as-session-with-qos.local"
     # httpVersion, useTLS, port: use global.nbi defaults
-  sbi:
-    nrfSvc: "http://nrf.net01.3gpp.eurecom.fr"
-    useNrf: false
-    pcfSvc: "http://core-simulator:8080"
+  sbi: {}
+    # nrfSvc, useNrf, pcfSvc: use global.sbi defaults
     # httpVersion: use global.sbi.httpVersion
     # supportedFeatures: uses global.supportedFeatures
   qosConfig:
@@ -148,10 +155,8 @@ trafficInfluence:
   nbi:
     fqdn: "3gpp-traffic-influence.local"
     # httpVersion, useTLS, port: use global.nbi defaults
-  sbi:
-    nrfSvc: "http://nrf.net01.3gpp.eurecom.fr"
-    useNrf: false
-    pcfSvc: "http://core-simulator:8080"
+  sbi: {}
+    # nrfSvc, useNrf, pcfSvc: use global.sbi defaults
     # httpVersion: use global.sbi.httpVersion
 
 # =============================================================================
@@ -160,11 +165,10 @@ trafficInfluence:
 ueIdentity:
   config:
     enabled: true
-    data:
-      httpPort: 8080
-      nbiPort: 8080
-      https: false
-      httpVer: 1
+    data: {}
+      # httpPort, nbiPort: use global.nbi.port
+      # https: use global.https
+      # httpVer: use global.nbi.httpVersion
       # redisSvc: resolved from redis.address in template
 
 # =============================================================================
@@ -206,10 +210,10 @@ ueAddress:
 ueProfile:
   config:
     enabled: true
-    data:
-      https: false
-      cnHttpVersion: 1
-      nbiPort: 8080
+    data: {}
+      # https: use global.https
+      # cnHttpVersion: use global.cnHttpVersion
+      # nbiPort: use global.nbi.port
       # redisSvc: resolved from redis.address in template
 
 # =============================================================================
@@ -219,9 +223,25 @@ coreNetwork:
   config:
     enabled: true
     data:
-      useNrf: false
-      cnHttpVersion: "1"
+      # useNrf: use global.sbi.useNrf
+      # cnHttpVersion: use global.cnHttpVersion
       # redisAddr, redisSvc: resolved from redis.address in template
+      amf:
+        ipAddr: "http://nef-core-simulator:8080"
+        subscrRoute: "/namf-evts/v1"
+        apiRoute: "/test/amf"
+        notifyCorrelationId: "string"
+        notificationId: "1"
+        notificationForwardRoute: "/sbi/notification/amf"
+      smf:
+        ipAddr: "http://nef-core-simulator:8080"
+        subscrRoute: "/nsmf_event-exposure/v1"
+        apiRoute: "/test/smf"
+        notifyCorrelationId: "string"
+        notificationId: "2"
+        notificationForwardRoute: "/sbi/notification/smf"
+      eventNotifyUri: "http://nef-core-network:9090"
+      serverAddr: "0.0.0.0:9090"
       amf:
         ipAddr: "http://nef-core-simulator:8080"
         subscrRoute: "/namf-evts/v1"

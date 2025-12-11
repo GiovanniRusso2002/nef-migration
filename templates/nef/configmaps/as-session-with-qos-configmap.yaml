@@ -1,0 +1,31 @@
+{{- if .Values.services.asSessionWithQos }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-as-session-with-qos-config
+  labels:
+    app.kubernetes.io/name: as-session-with-qos
+    app.kubernetes.io/instance: {{ .Release.Name }}
+data:
+  config.yaml: |
+    sbi:
+      nrfSvc: {{ .Values.asSessionWithQos.sbi.nrfSvc | default .Values.global.sbi.nrfSvc | quote }}
+      useNrf: {{ .Values.asSessionWithQos.sbi.useNrf | default .Values.global.sbi.useNrf }}
+      pcfSvc: {{ .Values.asSessionWithQos.sbi.pcfSvc | default .Values.global.sbi.pcfSvc | quote }}
+      httpVersion: {{ .Values.asSessionWithQos.sbi.httpVersion | default .Values.global.sbi.httpVersion }}
+    nbi:
+      httpVersion: {{ .Values.asSessionWithQos.nbi.httpVersion | default .Values.global.nbi.httpVersion }}
+      useTLS: {{ .Values.asSessionWithQos.nbi.useTLS | default .Values.global.nbi.useTLS }}
+      fqdn: {{ .Values.asSessionWithQos.nbi.fqdn | quote }}
+      port: {{ .Values.asSessionWithQos.nbi.port | default .Values.global.nbi.port }}
+    capifSvc: {{ .Values.capif.address | quote }}
+    supportedFeatures: {{ .Values.asSessionWithQos.supportedFeatures | default .Values.global.supportedFeatures | quote }}
+    qosConfig:
+      {{- toYaml .Values.asSessionWithQos.qosConfig | nindent 6 }}
+    redis:
+      address: {{ .Values.redis.address | quote }}
+    capif:
+      fqdn: {{ .Values.capif.fqdn | quote }}
+      authPort: {{ .Values.capif.authPort | quote }}
+      username: {{ .Values.capif.username | quote }}
+{{- end }}

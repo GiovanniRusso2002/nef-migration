@@ -1,7 +1,7 @@
 {{- if .Values.services.coreNetwork }}
 {{ include "openexposure.deployment" (dict "name" "core-network" "key" "coreNetwork" "context" . "port" 9090 "hasConfig" false "env" (list 
-  (dict "name" "USE_NRF" "value" (toString .Values.coreNetwork.config.data.useNrf)) 
-  (dict "name" "CN_HTTP_VERSION" "value" (toString .Values.coreNetwork.config.data.cnHttpVersion)) 
+  (dict "name" "USE_NRF" "value" (toString (default .Values.global.sbi.useNrf .Values.coreNetwork.config.data.useNrf))) 
+  (dict "name" "CN_HTTP_VERSION" "value" (toString (default .Values.global.cnHttpVersion .Values.coreNetwork.config.data.cnHttpVersion))) 
   (dict "name" "REDIS_ADDR" "value" .Values.redis.address) 
   (dict "name" "REDIS_SVC" "value" .Values.redis.address) 
   (dict "name" "AMF_IP_ADDR" "value" .Values.coreNetwork.config.data.amf.ipAddr) 

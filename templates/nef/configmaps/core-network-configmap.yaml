@@ -8,8 +8,8 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
 data:
   config.yaml: |
-    useNrf: {{ .Values.coreNetwork.config.data.useNrf }}
-    cnHttpVersion: {{ .Values.coreNetwork.config.data.cnHttpVersion }}
+    useNrf: {{ .Values.coreNetwork.config.data.useNrf | default .Values.global.sbi.useNrf }}
+    cnHttpVersion: {{ .Values.coreNetwork.config.data.cnHttpVersion | default .Values.global.cnHttpVersion }}
     redisAddr: {{ .Values.redis.address | quote }}
     redisSvc: {{ .Values.redis.address | quote }}
     amfIpAddr: {{ .Values.coreNetwork.config.data.amf.ipAddr | quote }}
