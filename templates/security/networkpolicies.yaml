@@ -341,7 +341,7 @@ spec:
     - podSelector:
         matchLabels:
           app.kubernetes.io/name: core-network
-    - podSelector:
+    - podSelector: # TODO: Verify if only monitoring event can be kept to avoid redunancy
         matchExpressions:
         - key: app.kubernetes.io/name
           operator: In
