@@ -50,6 +50,13 @@ spec:
             - containerPort: {{ $port }}
               name: http
               protocol: TCP
+          {{- if .extraPorts }}
+            {{- range .extraPorts }}
+            - containerPort: {{ .containerPort }}
+              name: {{ .name }}
+              protocol: TCP
+            {{- end }}
+          {{- end }}
           {{- if .env }}
           env:
             {{- toYaml .env | nindent 12 }}

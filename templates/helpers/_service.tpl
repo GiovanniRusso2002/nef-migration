@@ -20,6 +20,13 @@ spec:
     - port: {{ $port }}
       targetPort: {{ $port }}
       name: http
+  {{- if .extraPorts }}
+    {{- range .extraPorts }}
+    - port: {{ .port }}
+      targetPort: {{ .port }}
+      name: {{ .name }}
+    {{- end }}
+  {{- end }}
   selector:
     {{ include "openexposure.selectorLabels" . | nindent 4 }}
 {{- end }}
