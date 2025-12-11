@@ -257,7 +257,7 @@ spec:
 
 ---
 # Core Network Service NetworkPolicy
-{{- if .Values.services.coreNetwork }}
+{{- if .Values.services.coreNetworkService }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:

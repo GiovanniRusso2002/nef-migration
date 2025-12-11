@@ -10,7 +10,7 @@ services:
   ueAddress: true
   ueProfile: true
   datasetExporter: true
-  coreNetwork: true
+  coreNetworkService: true
   coreSimulator: true
   capif: true
   redis: true
@@ -39,7 +39,7 @@ global:
     useNrf: false
     pcfSvc: "http://core-simulator:8080"
 
-  # Core Network HTTP version (used by ueProfile, coreNetwork)
+  # Core Network HTTP version (used by ueProfile, coreNetworkService)
   cnHttpVersion: 1
 
   # Common service defaults
@@ -59,7 +59,7 @@ images:
   ueAddress: "openexposure/ue-address:develop"
   ueProfile: "openexposure/ue-profile-service:develop"
   datasetExporter: "openexposure/dataset-exporter:develop"
-  coreNetwork: "openexposure/core-network-service:develop"
+  coreNetworkService: "openexposure/core-network-service:develop"
   coreSimulator: "openexposure/core-simulator:develop"
   capif: "openexposure/capif-service:develop"
   redis: "redis/redis-stack-server:latest"
@@ -119,9 +119,9 @@ monitoringEvent:
         httpVersion: 2
       # supportedFeatures: uses global.supportedFeatures
 
-# =============================================================================
-# AS SESSION WITH QOS
-# =============================================================================
+      # =============================================================================
+      # AS SESSION WITH QOS
+      # =============================================================================
 asSessionWithQos:
   nbi:
     fqdn: "3gpp-as-session-with-qos.local"
@@ -187,9 +187,9 @@ ueId:
         # supportedFeatures: uses global.supportedFeatures
         # capifSvc: resolved from capif.address in template
 
-# =============================================================================
-# UE ADDRESS
-# =============================================================================
+        # =============================================================================
+        # UE ADDRESS
+        # =============================================================================
 ueAddress:
   config:
     enabled: true
@@ -204,9 +204,9 @@ ueAddress:
         # supportedFeatures: uses global.supportedFeatures
         # capifSvc: resolved from capif.address in template
 
-# =============================================================================
-# UE PROFILE
-# =============================================================================
+        # =============================================================================
+        # UE PROFILE
+        # =============================================================================
 ueProfile:
   config:
     enabled: true
@@ -219,29 +219,13 @@ ueProfile:
 # =============================================================================
 # CORE NETWORK
 # =============================================================================
-coreNetwork:
+coreNetworkService:
   config:
     enabled: true
     data:
       # useNrf: use global.sbi.useNrf
       # cnHttpVersion: use global.cnHttpVersion
       # redisAddr, redisSvc: resolved from redis.address in template
-      amf:
-        ipAddr: "http://nef-core-simulator:8080"
-        subscrRoute: "/namf-evts/v1"
-        apiRoute: "/test/amf"
-        notifyCorrelationId: "string"
-        notificationId: "1"
-        notificationForwardRoute: "/sbi/notification/amf"
-      smf:
-        ipAddr: "http://nef-core-simulator:8080"
-        subscrRoute: "/nsmf_event-exposure/v1"
-        apiRoute: "/test/smf"
-        notifyCorrelationId: "string"
-        notificationId: "2"
-        notificationForwardRoute: "/sbi/notification/smf"
-      eventNotifyUri: "http://nef-core-network:9090"
-      serverAddr: "0.0.0.0:9090"
       amf:
         ipAddr: "http://nef-core-simulator:8080"
         subscrRoute: "/namf-evts/v1"
@@ -344,7 +328,7 @@ podDisruptionBudget:
 #   default:
 #     requests: { cpu: 100m, memory: 128Mi }
 #     limits: { cpu: 500m, memory: 512Mi }
-#   coreNetwork:
+#   coreNetworkService:
 #     requests: { cpu: 150m, memory: 256Mi }
 #     limits: { cpu: 1000m, memory: 1Gi }
 #   coreSimulator:

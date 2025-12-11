@@ -142,7 +142,7 @@ services:
   ueAddress: true           # UE Address API
   ueProfile: true           # UE Profile Service
   datasetExporter: true     # Metrics/Dataset Exporter
-  coreNetwork: true         # Core Network Service
+  coreNetworkService: true         # Core Network Service
   coreSimulator: true       # 5G Core Simulator
   capif: true               # CAPIF Service
   redis: true               # Redis Stack

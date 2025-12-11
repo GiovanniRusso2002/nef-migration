@@ -1,23 +1,23 @@
-{{- if .Values.services.coreNetwork }}
-{{ include "openexposure.deployment" (dict "name" "core-network" "key" "coreNetwork" "context" . "port" 9090 "hasConfig" false "env" (list 
-  (dict "name" "USE_NRF" "value" (toString (default .Values.global.sbi.useNrf .Values.coreNetwork.config.data.useNrf))) 
-  (dict "name" "CN_HTTP_VERSION" "value" (toString (default .Values.global.cnHttpVersion .Values.coreNetwork.config.data.cnHttpVersion))) 
+{{- if .Values.services.coreNetworkService }}
+{{ include "openexposure.deployment" (dict "name" "core-network" "key" "coreNetworkService" "context" . "port" 9090 "hasConfig" false "env" (list 
+  (dict "name" "USE_NRF" "value" (toString (default .Values.global.sbi.useNrf .Values.coreNetworkService.config.data.useNrf))) 
+  (dict "name" "CN_HTTP_VERSION" "value" (toString (default .Values.global.cnHttpVersion .Values.coreNetworkService.config.data.cnHttpVersion))) 
   (dict "name" "REDIS_ADDR" "value" .Values.redis.address) 
   (dict "name" "REDIS_SVC" "value" .Values.redis.address) 
-  (dict "name" "AMF_IP_ADDR" "value" .Values.coreNetwork.config.data.amf.ipAddr) 
-  (dict "name" "AMF_SUBSCR_ROUTE" "value" .Values.coreNetwork.config.data.amf.subscrRoute) 
-  (dict "name" "AMF_API_ROUTE" "value" .Values.coreNetwork.config.data.amf.apiRoute) 
-  (dict "name" "AMF_NOTIFY_CORRELATION_ID" "value" .Values.coreNetwork.config.data.amf.notifyCorrelationId) 
-  (dict "name" "AMF_NOTIFICATION_ID" "value" (toString .Values.coreNetwork.config.data.amf.notificationId)) 
-  (dict "name" "AMF_NOTIFICATION_FORWARD_ROUTE" "value" .Values.coreNetwork.config.data.amf.notificationForwardRoute) 
-  (dict "name" "SMF_IP_ADDR" "value" .Values.coreNetwork.config.data.smf.ipAddr) 
-  (dict "name" "SMF_SUBSCR_ROUTE" "value" .Values.coreNetwork.config.data.smf.subscrRoute) 
-  (dict "name" "SMF_API_ROUTE" "value" .Values.coreNetwork.config.data.smf.apiRoute) 
-  (dict "name" "SMF_NOTIFY_CORRELATION_ID" "value" .Values.coreNetwork.config.data.smf.notifyCorrelationId) 
-  (dict "name" "SMF_NOTIFICATION_ID" "value" (toString .Values.coreNetwork.config.data.smf.notificationId)) 
-  (dict "name" "SMF_NOTIFICATION_FORWARD_ROUTE" "value" .Values.coreNetwork.config.data.smf.notificationForwardRoute) 
-  (dict "name" "EVENT_NOTIFY_URI" "value" .Values.coreNetwork.config.data.eventNotifyUri) 
-  (dict "name" "SERVER_ADDR" "value" .Values.coreNetwork.config.data.serverAddr)
+  (dict "name" "AMF_IP_ADDR" "value" .Values.coreNetworkService.config.data.amf.ipAddr) 
+  (dict "name" "AMF_SUBSCR_ROUTE" "value" .Values.coreNetworkService.config.data.amf.subscrRoute) 
+  (dict "name" "AMF_API_ROUTE" "value" .Values.coreNetworkService.config.data.amf.apiRoute) 
+  (dict "name" "AMF_NOTIFY_CORRELATION_ID" "value" .Values.coreNetworkService.config.data.amf.notifyCorrelationId) 
+  (dict "name" "AMF_NOTIFICATION_ID" "value" (toString .Values.coreNetworkService.config.data.amf.notificationId)) 
+  (dict "name" "AMF_NOTIFICATION_FORWARD_ROUTE" "value" .Values.coreNetworkService.config.data.amf.notificationForwardRoute) 
+  (dict "name" "SMF_IP_ADDR" "value" .Values.coreNetworkService.config.data.smf.ipAddr) 
+  (dict "name" "SMF_SUBSCR_ROUTE" "value" .Values.coreNetworkService.config.data.smf.subscrRoute) 
+  (dict "name" "SMF_API_ROUTE" "value" .Values.coreNetworkService.config.data.smf.apiRoute) 
+  (dict "name" "SMF_NOTIFY_CORRELATION_ID" "value" .Values.coreNetworkService.config.data.smf.notifyCorrelationId) 
+  (dict "name" "SMF_NOTIFICATION_ID" "value" (toString .Values.coreNetworkService.config.data.smf.notificationId)) 
+  (dict "name" "SMF_NOTIFICATION_FORWARD_ROUTE" "value" .Values.coreNetworkService.config.data.smf.notificationForwardRoute) 
+  (dict "name" "EVENT_NOTIFY_URI" "value" .Values.coreNetworkService.config.data.eventNotifyUri) 
+  (dict "name" "SERVER_ADDR" "value" .Values.coreNetworkService.config.data.serverAddr)
 )) }}
 {{- end }}
 
